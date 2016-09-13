@@ -1,0 +1,53 @@
+.logo, .logo-responsive{
+    width: 100px;
+    margin-right: 20px;
+}
+.logo{
+	margin-left: -20px;
+}
+.help-block{
+	font-size: 13px;
+	margin-bottom: 5px;
+	text-align: right;
+}
+.promocion{
+	color: #FF0000;
+	font-size: 13px;
+	font-weight: bold;
+}
+.carousel-control.left, .carousel-control.right{
+	height: 50px;
+	border-radius: 30%;
+	margin: auto 0;
+	width: 50px;
+}
+.carousel-control{
+	background: #6E6E6E;
+}
+li{
+	list-style: none;
+}
+.id-contenido{
+	visibility: hidden;
+}
+.alert-accion{
+	height: 35px;
+	margin: 0px 0px 0px 20px;
+	padding: 10px 15px;
+	font-size: 12px;
+}
+
+/*Icono en input de busqueda*/
+.right-inner-addon {
+    position: relative;
+}
+.right-inner-addon input {
+    padding-right: 30px;  
+}
+.right-inner-addon i {
+    position: absolute;
+    right: 0px;
+    padding: 10px 12px;
+    pointer-events: none;
+    z-index: 10;
+}
