@@ -1,12 +1,11 @@
 //Gestión de Noticias
     //Abrir modal Noticias
     $("#nueva-noticia").on("click",function(){
+        $("#title-noticia").text("Nueva Noticia");
+        $("#btn-noticia").removeClass('btn-warning');
+        $("#btn-noticia").addClass('btn-success').val("Guardar");
         $("#form-noticia")[0].reset();
-        $(".modal-title").text("Agregar Noticia");
-        $("#editar-noticia").hide();
-        $("#guardar-noticia").show();
-        $("#date").hide();
-        $("#fecha-noticia").attr("disabled", true);
+        $("#form-noticia").attr("action", "admin/crearDatos");
         $("#modal-noticia").modal({
             show:true,
             backdrop:"static"
@@ -16,7 +15,7 @@
     //Escucha datos en barra de búsqueda Noticias
     $("#buscar-noticia").keyup(function(){
         buscar = $("#buscar-noticia").val();
-        listarNoticias(buscar);
+        gestionarNoticias(buscar, 1);
     });
     
     //Editar Noticia
@@ -37,6 +36,14 @@
         idNoticias = $(this).attr("value");
         eliminarNoticia(idNoticias);
     });
+
+    //Paginación
+    $("body").on("click", "#paginacion-noticias li a", function(e){
+        e.preventDefault();
+        valor = $(this).attr("href");
+        buscar = $("#buscar-noticia").val();
+        gestionarNoticias(buscar, valor);
+    });
     
     //Resetear modal al cerrar
     $(".modal > form").on("hidden.bs.modal", function(){
@@ -45,17 +52,17 @@
     });
     
 //Gestión de Noticias
-function listarNoticias(buscar){
+function gestionarNoticias(buscar, pagina){
     $.ajax({
         type: "POST",
-        url: "admin/listarNoticias",
+        url: "admin/leerDatos",
         cache: false,
-        data: {buscarNoticia:buscar},
-        success: function(datos){
+        data: {buscar_noticia:buscar, pagina_noticia: pagina, tabla: "noticias"},
+    }).success( function(datos){
             html = "<table class='table table-bordered'><thead>";
             html += "<tr><th>#ID</th><th>Titulo</th><th>Tipo</th><th>Fecha</th><th>Acciones</th>";
             html += "</thead><tbody>";
-            $.each(datos.autor, function (key, item){
+            $.each(datos.registros, function (key, item){
                 html += "<tr><td>"+item.id+"</td><td>"+item.titulo+"</td><td>"+item.tipo+"</td>";
                 html += "<td>"+item.fecha+"</td>";
                 html += "<td><button type='button' id='estatus-noticia' title='Estatus' class='btn btn-xs' value="+item.id+">"+item.estatus+"</button>"; 
@@ -64,7 +71,10 @@ function listarNoticias(buscar){
             });
             html +="</tbody></table>";
             $("#tabla-noticias").html(html);
-        }
+            total_registros = datos.total_registros;
+            cantidad = datos.cantidad;
+            paginarRegistros(pagina, total_registros, cantidad);
+            $("#paginacion-noticias").html(paginador);
     });
 }
 
@@ -78,7 +88,7 @@ function agregarNoticia(){
             $(".modal-title").text("Agregar Noticia");
             $("#form-noticia")[0].reset();
             $("#modal-noticia").modal("hide");
-            listarNoticias();
+            gestionarNoticias(buscar, 1);
             $("#msj-noticia").addClass("mensaje").html("Registro completado correctamente.").show(200).delay(2500).hide(200);
         },
         error: function(){
@@ -122,7 +132,7 @@ function actualizarNoticia(){
         success: function(){
             $("#modal-noticia").modal("hide");
             $("#form-noticia")[0].reset();
-            listarNoticias();
+            gestionarNoticias(buscar, 1);
             $("#msj-noticia").addClass("mensaje").html("Se actualizo registro.").show(200).delay(2500).hide(200);
         },
         error: function(){
@@ -140,7 +150,7 @@ function eliminarNoticia(id){
             cache: false,
             data: "idNoticias= "+id,
             success: function(){
-                listarNoticias();
+                gestionarNoticias(buscar, 1);
                 $("#msj-noticia").addClass("mensaje").html("Registro eliminado correctamente.").show(200).delay(2500).hide(200);
             }
         });
@@ -156,7 +166,7 @@ function estatusNoticia(id){
             cache: false,
             data: "idNoticias= "+id,
             success: function(){
-                listarNoticias();
+                gestionarNoticias(buscar, 1);
                 $("#msj-noticia").addClass("mensaje").html("Actualización con exito.").show(200).delay(2500).hide(200);
             }
         });

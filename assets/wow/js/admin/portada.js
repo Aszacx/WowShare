@@ -14,7 +14,7 @@
         $("#btn-portada").removeClass('btn-warning');
         $("#btn-portada").addClass('btn-success').val("Guardar");
         $("#form-portada")[0].reset();
-        $("#form-portada").attr("action", "admin/agregarPortada");
+        $("#form-portada").attr("action", "admin/createCover");
         $("#modal-portada").modal({
             show:true,
             backdrop:"static"
@@ -50,12 +50,13 @@
 
         var $form = $(e.target),
             fv    = $form.data("formValidation");
+        var formData = new FormData($("#form-portada")[0]);        
 
         $.ajax({
             url: $form.attr("action"),
             type: "POST",
             //data: $form.serialize(),
-            data: $form.formData,
+            data: formData,
             cache: false,
             contentType: false,
             processData: false,
@@ -79,26 +80,38 @@
     $("body").on("click","#tabla-portadas #eliminar-portada",function(event){
         idPortada = $(this).attr("value");
         eliminarPortada(idPortada);
+    });
+
+    //Paginación
+    $("body").on("click", "#paginacion-portadas li a", function(e){
+        e.preventDefault();
+        valor = $(this).attr("href");
+        gestionarPortadas(valor);
     }); 
 
 //Gestión de Portadas
-function gestionarPortadas(){
+function gestionarPortadas(pagina){
     $.ajax({
         type:"POST",
         url:"admin/listarPortada",
         cache: false,
-        success: function(datos){
+        data: {pagina_portada: pagina},
+        dataType: "JSON"
+    }).success( function(datos){
             html = "<table class='table table-bordered'><thead>";
             html += "<tr><th>Miniatura</th><th>Nombre</th><th>Acciones</th></tr>";
             html += "</thead><tbody>";
-            $.each(datos.autor, function (key, item){
+            $.each(datos.portada, function (key, item){
                 html += "<tr><td><img src=../"+item.miniatura+"></td><td>"+item.nombre+"</td><td>";
                 //html += "<td><button type='button' id='estatus-usuario' title='Estatus' class='btn btn-xs' value="+item.idUsuario+">"+item.estatus+"</button>"; 
                 html += " <button type='button' id='eliminar-portada' title='Eliminar' class='btn btn-danger btn-md' value="+item.idPortada+"><i class='glyphicon glyphicon-trash'></i></button></td></tr>";
             });
             html +="</tbody></table>";
-            $("#tabla-portadas").html(html)
-        }
+            $("#tabla-portadas").html(html);
+            total_registros = datos.total_registros;
+            cantidad = datos.cantidad;
+            paginarRegistros(pagina, total_registros, cantidad);
+            $("#paginacion-portadas").html(paginador);
     });
 }
 
@@ -107,7 +120,8 @@ function listarPortada(){
         type:"POST",
         url:"admin/listarPortada",
         cache: false,
-        success: function(datos){
+        dataType: "JSON"
+    }).success( function(datos){
             html = "<label class='input-group-addon'>Portada:</label>";
             html += "<select id='cover' name='cover' class='form-control'>";                  
             html += "<option value=''>Selecciona Portada</option>";
@@ -117,7 +131,6 @@ function listarPortada(){
             html += "</select>";
             html += "<span class='input-group-btn'><button class='btn btn-primary' type='button' id='nueva-portada'><i class='fa fa-plus'></i></button></span>";
             $("#lista-portada").html(html);
-        }
     });
 }
 

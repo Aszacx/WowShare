@@ -8,7 +8,7 @@
             </div>
             <div class="modal-body">
                 <br />
-                <form role="form" class="form-horizontal" method="POST" action="<?php base_url();?>administracion/actualizarSlide" id="form_slide">
+                <form role="form" class="form-horizontal">
                     <div class="form-group">
                         <input type="hidden" id="idSelect" name="idSelect" value="">
                         <div class="input-group">

@@ -1,18 +1,18 @@
 <!--Modal Agregar Usuario-->
-<div class="modal fade" id="modalUsuario" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+<div class="modal fade" id="modal-usuario" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="titleUsuario"></h4>
+                <h4 class="modal-title" id="title-usuario"></h4>
             </div>
             <div class="modal-body">
-                <form role="form" id="formUsuario" onsubmit="return false">
+                <form role="form" id="form-usuario" onsubmit="return false">
                     <input type="hidden" id="idUsuario" name="idUsuario" value="">
                     <div class="form-group" id="tipo">
                         <div class="input-group">
                             <label class="input-group-addon">Rol:</label>
-                            <select name="tipo" class="form-control" id="tipoUsuario">
+                            <select name="tipo" class="form-control" id="tipo-usuario">
                                 <option value="">Selecciona Rol</option>
                                 <option value="1">Admin</option>
                                 <option value="2">Afiliador</option>
@@ -20,7 +20,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group membresia" id="tipoMembresia">
+                    <div class="form-group" id="tipo-membresia">
                         <div class="input-group">
                             <label class="input-group-addon">Membresia:</label>
                             <select id="membresia" name="membresia" class="form-control">
@@ -68,7 +68,7 @@
                     </div>						
                     <div class="modal-footer">
                         <div class="form-group text-right">
-                            <input type="submit" class="btn" id="btnUsuario">
+                            <input type="submit" class="btn" id="btn-usuario">
                         </div>
                     </div>
                 </form>

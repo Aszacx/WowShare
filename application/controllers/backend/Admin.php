@@ -65,17 +65,70 @@ class Admin extends CI_Controller{
 	}
 
 	//Tabla de Datos
-	function gestionarUsuarios(){
+	function leerDatos(){
 		if ($this->input->is_ajax_request()) {
-			$buscar = $this->input->post('buscar_usuario');
-			$num_pagina = $this->input->post('pagina_usuario');
+			if($this->input->post()){
+				$tabla = $this->input->post('tabla', TRUE);
+				switch ($tabla) {
+					case 'usuario':
+						$data = array(
+							'buscar' => 'buscar_usuario',
+							'pagina' => 'pagina_usuario',
+							'metodo' => 'obtenerUsuarios'
+						);
+					break;
+					case 'contenido':
+						$data = array(
+							'buscar' => 'buscar_contenido',
+							'pagina' => 'pagina_contenido',
+							'metodo' => 'obtenerContenidos'
+						);
+					break;
+					case 'autor':
+						$data = array(
+							'buscar' => 'buscar_autor',
+							'pagina' => 'pagina_autor',
+							'metodo' => 'obtenerAutores'
+						);
+					break;
+					case 'categoria':
+						$data = array(
+							'buscar' => 'buscar_categoria',
+							'pagina' => 'pagina_categoria',
+							'metodo' => 'obtenerCategorias'
+						);
+					break;
+					case 'noticias':
+						$data = array(
+							'buscar' => 'buscar_noticia',
+							'pagina' => 'pagina_noticia',
+							'metodo' => 'obtenerNoticias'
+						);
+					break;
+					case 'portada':
+					break;
+					case 'slide':
+					break;
+				}
+				$this->gestionarRegistros($data);
+			}
+		}
+		else{
+			show_404();
+		}
+	}
+
+	function gestionarRegistros($data = array()){
+		if ($this->input->is_ajax_request()) {
+			$buscar = $this->input->post($data['buscar']);
+			$num_pagina = $this->input->post($data['pagina']);
 			$cantidad = 5;
             $inicio = ($num_pagina - 1) * $cantidad;
             $data = array(
-            	'usuario' => $this->Admin_model->mostrar($buscar, $inicio, $cantidad, 'usuario'),
-            	'total_registros' => count($this->Admin_model->mostrar($buscar)),
+            	'registros' => $this->Admin_model->$data['metodo']($buscar, $inicio, $cantidad),
+            	'total_registros' => count($this->Admin_model->$data['metodo']($buscar)),
             	'cantidad' => $cantidad	
-            	);
+            );
 			echo json_encode($data);
 			exit();
 		}
@@ -84,17 +137,17 @@ class Admin extends CI_Controller{
 		}
 	}
 
-	function gestionarContenido(){
+	function gestionarSlides(){
 		if ($this->input->is_ajax_request()) {
-			$buscar = $this->input->post('buscar_contenido');
-			$num_pagina = $this->input->post('pagina_contenido');
+			$tipo = $this->input->post('tipo', TRUE);
+			$num_pagina = $this->input->post('pagina_slide');
             $cantidad = 5;
             $inicio = ($num_pagina - 1) * $cantidad;
             $data = array(
-            	'contenido' => $this->Admin_Model->mostrarContenido($buscar, $inicio, $cantidad),
-            	'total_registros' => count($this->Admin_model->mostrarContenidoCategorias($buscar)),
+            	'slides' => $this->Admin_model->mostrarSlides($tipo, $inicio, $cantidad),
+            	'total_registros' => count($this->Admin_model->mostrarSlides($buscar)),
             	'cantidad' => $cantidad	
-            	);
+            );
 			echo json_encode($data);
 			exit();
 		}
@@ -103,201 +156,161 @@ class Admin extends CI_Controller{
 		}
 	}
 
-	function gestionarAutores(){
-		if ($this->input->is_ajax_request()) {
-            $buscar = $this->input->post('buscar_autor');
-            $num_pagina = $this->input->post('pagina_autor');
-            $cantidad = 5;
-            $inicio = ($num_pagina - 1) * $cantidad;
-            $data = array(
-            		'autor' => $this->Admin_model->mostrarAutores($buscar, $inicio, $cantidad),
-            		'total_registros' => count($this->Admin_model->mostrarAutores($buscar)),
-            		'cantidad' => $cantidad	
-            	);
-			echo json_encode($data);
-			exit();
-		}
-		else{
-			show_404();
-		}
-	}
 
-	function gestionarCategorias(){
+	//Alta de Registros
+	function crearDatos(){
 		if ($this->input->is_ajax_request()) {
-            $buscar = $this->input->post('buscar_categoria');
-            $num_pagina = $this->input->post('pagina_categoria');
-            $cantidad = 5;
-            $inicio = ($num_pagina - 1) * $cantidad;
-            $data = array(
-            		'categoria' => $this->Admin_model->mostrarCategorias($buscar, $inicio, $cantidad),
-            		'total_registros' => count($this->Admin_model->mostrarCategorias($buscar)),
-            		'cantidad' => $cantidad	
-            	);
-			echo json_encode($data);
-			exit();
-		}
-		else{
-			show_404();
-		}
-	}
-
-	//Alta de Registro
-	function agregarUsuario(){
-		if ($this->input->is_ajax_request()) {
-			//header('Content-type: application/json; charset=utf-8');
             if($this->input->post()){
-                $tipo =  $this->input->post('tipo', TRUE);
-                $membresia = $this->input->post('membresia', TRUE);
-                $datos = array(
-                    'id' => $this->input->post('idUsuario', TRUE),
-                    'tipo' => $this->input->post('tipo', TRUE),
-                    'nombre' => $this->input->post('nombre', TRUE),
-                    'apellido' => $this->input->post('apellido', TRUE),
-                    'email' => $this->input->post('email', TRUE),
-                    'estatus' => 0,
-                    'contrasena' => sha1($this->input->post('pass', TRUE)),
-                    'fecha_registro' => date('Y-m-d'),
-                );
-
-                switch ($tipo) {
-                    case '1':
+				$tabla = $this->input->post('tabla', TRUE);
+				switch ($tabla) {
+					case 'usuario':
+						$config = array(
+		            		't_uno' => 'usuario',
+		                    't_dos' => 'cliente',
+		                    'foreign_id' => 'usuario_id'
+		            	);
+		                $tipo =  $this->input->post('tipo', TRUE);
+		                $membresia = $this->input->post('membresia', TRUE);
+		                $data_uno = array(
+		                    'id' => $this->input->post('idUsuario', TRUE),
+		                    'tipo' => $this->input->post('tipo', TRUE),
+		                    'nombre' => $this->input->post('nombre', TRUE),
+		                    'apellido' => $this->input->post('apellido', TRUE),
+		                    'email' => $this->input->post('email', TRUE),
+		                    'estatus' => 0,
+		                    'contrasena' => sha1($this->input->post('pass', TRUE)),
+		                    'fecha_registro' => date('Y-m-d')
+		                );
+		                switch ($tipo) {
+		                    case '1':
+		                    break;
+		                    case '2':
+		                    break;
+		                    case '3':
+		                    	switch ($membresia) {
+		                        	case '1':
+		                        		$caducidad = date('Y-m-d', strtotime("+1 year"));
+		                        	break;
+		                        	case '2':
+		                        		$caducidad = date('Y-m-d', strtotime("+5 days"));
+		                        	break;
+		                        	case '3':
+		                        		$caducidad = date('Y-m-d', strtotime("+3 month"));
+		                        	break;
+		                        } 
+		                    $data_dos = array(
+		                        'pais_id' => $this->input->post('pais', TRUE),
+		                        'caducidad' => $caducidad,
+		                        'membresia_id' => $membresia
+		                    );                                                
+		                }
                     break;
-                    case '2':
+                    case 'contenido':
+                    	$config = array(
+		            		't_uno' => 'contenido',
+		                    't_dos' => 'tipo_contenido',
+		                    'foreign_id' => 'contenido_id'
+		            	);
+                    	$titulo = $this->input->post('titulo', TRUE);
+						$url = convert_accented_characters(url_title($titulo,'-',TRUE));
+						$data_dos = array(
+							'tipo' => $this->input->post('tipo', TRUE),
+							'enlace' => $this->input->post('enlace', TRUE),
+							'anio' => $this->input->post('anio', TRUE),
+						);
+			            switch ($data_dos['tipo']) {
+							//Videos
+							case '4':
+			                    $data_uno = array(
+			                        'titulo' => $titulo,
+			                        'estatus' => 0,
+			                        'fecha' => date('Y-m-d'),
+			                        'url' => $url,
+			                        //'descripcion' => $this->input->post('descripcion', TRUE),
+			                        'autor_id' => $this->input->post('autor', TRUE),
+			                        'categoria_id' => $this->input->post('categoria', TRUE),
+			                        'portada_id' => $this->input->post('portada', TRUE)
+			                    );
+							break;
+							//Apps, Libros y Revistas
+							default:
+			                    $data_uno = array(
+			                        'titulo' => $titulo,
+			                        'estatus' => 0,
+			                        'fecha' => date('Y-m-d'),
+			                        'url' => $url,
+			                        //'descripcion' => $this->input->post('descripcion', TRUE),
+			                        'autor_id' => $this->input->post('autor', TRUE),
+			                        'categoria_id' => $this->input->post('categoria', TRUE),
+			                    );							   
+							break;
+						}
                     break;
-                    case '3':
-                        $data['pais'] = $this->input->post('pais');
-                        $data['membresia'] = $membresia;
-                        switch ($membresia) {
-                        	case '1':
-                        		$data['vida'] = date('Y-m-d', strtotime("+1 year"));
-                        	break;
-                        	case '2':
-                        		$data['vida'] = date('Y-m-d', strtotime("+5 days"));
-                        	break;
-                        	case '3':
-                        		$data['vida'] = date('Y-m-d', strtotime("+3 month"));
-                        	break;
-                        }                        
-                        if($this->Admin_Model->guardarUsuario($datos, $data) == FALSE){
-                        	$response = array('error' => "error");
-                        	echo json_encode($response);
-                        }
-                        else{
-                        	$response = array('exito' => "exito");
-                        	echo json_encode($response);
-                        }
+                    case 'autor':
+                    	$config = array(
+		            		'tabla' => 'autor'
+		            	);
+		            	$data_uno = array('autor' => $this->input->post('autor', TRUE));
+		            	$data_dos = NULL;
                     break;
-                }
+                    case 'categoria':
+                    	$config = array(
+		            		'tabla' => 'categoria'
+		            	);
+		            	$data_uno = array('categoria' => $this->input->post('categoria', TRUE));
+		            	$data_dos = NULL;
+                    break;
+                    case 'noticias':
+                    	$config = array(
+		            		'tabla' => 'noticias'
+		            	);
+		            	$titulo = $this->input->post('titulo', TRUE);
+						$url = convert_accented_characters(url_title($titulo,'-',TRUE));
+			            $data_uno = array(
+			                'titulo' => $titulo,
+			                'contenido' => $this->input->post('contenido', TRUE),
+			                'fecha' => date('Y-m-d'),
+			                'url' => $url,
+			                'tipo_noticia_id' => $this->input->post('tipo_noticia', TRUE),
+			                'estatus' => 0
+						);
+		            	$data_dos = NULL;
+                    break;
+                }            	
+            	$this->guardarRegistros($data_uno, $data_dos, $config);
             }
-		}
-		else{
-			show_404();
-		}
-	}
-
-	function agregarContenido(){
-		if ($this->input->is_ajax_request()) {
-			$titulo = $this->input->post('titulo', TRUE);
-			$url = convert_accented_characters(url_title($titulo,'-',TRUE));
-			
-			$data['tipo'] =  $this->input->post('tipo', TRUE);
-			$data['enlace'] = $this->input->post('enlace', TRUE);
-			$data['anio'] = $this->input->post('anio', TRUE);
-
-            switch ($data['tipo']) {
-				//Videos
-				case '4':
-                    $datos = array(
-                        'titulo' => $titulo,
-                        'estatus' => 0,
-                        'fecha' => date('Y-m-d'),
-                        'url' => $url,
-                        //'descripcion' => $this->input->post('descripcion', TRUE),
-                        'autor_id' => $this->input->post('autor', TRUE),
-                        'categoria_id' => $this->input->post('categoria', TRUE),
-                        'portada_id' => $this->input->post('portada', TRUE)
-                    );
-                    $query = $this->Admin_model->guardarContenido($datos, $data);
-                    if($query == TRUE) {
-						echo json_encode($query);
-						exit();
-					} else{
-						echo json_encode($query);
-						exit();
-					}
-				break;
-				//Apps, Libros y Revistas
-				default:
-                    $datos = array(
-                        'titulo' => $titulo,
-                        'estatus' => 0,
-                        'fecha' => date('Y-m-d'),
-                        'url' => $url,
-                        //'descripcion' => $this->input->post('descripcion', TRUE),
-                        'autor_id' => $this->input->post('autor', TRUE),
-                        'categoria_id' => $this->input->post('categoria', TRUE),
-                    );
-				    $query = $this->Admin_model->guardarContenido($datos, $data);
-				    if($query == TRUE) {
-						echo json_encode($query);
-						exit();
-					} else{
-						echo json_encode($query);
-						exit();
-					}
-				break;
-			}
         }
 		else{
 			show_404();
 		}
+	
 	}
-
-	function agregarAutor() {
-		if ($this->input->is_ajax_request()) {
-			$datos = array('autor' => $this->input->post('autor', TRUE));
-			$query = $this->Admin_model->guardarRegistro($datos, 'autor');
-			if($query == TRUE) {
-				echo json_encode($query);
-				exit();
-			} else{
-				echo json_encode($query);
-				exit();
-			}
-		} else {
-			show_404();
-		}
-	}
-
-	function agregarCategoria(){
-		if ($this->input->is_ajax_request()) {
-			$datos = array('categoria' => $this->input->post('categoria', TRUE));
-			$query = $this->Admin_model->guardarRegistro($datos, 'categoria');
-			if($query == TRUE) {
-				echo json_encode($query);
-				exit();
-			} else{
-				echo json_encode($query);
-				exit();
-        	}
-		}
+	function guardarRegistros($data_uno = array(), $data_dos = array(), $config = array()){	
+        $query = $this->Admin_model->save($data_uno, $data_dos, $config);
+        if($query == TRUE) {
+			echo json_encode($query);
+			exit();
+		} 
 		else{
-			show_404();
-		}
+			echo json_encode($query);
+			exit();
+		}	
 	}
 
-	function agregarPortada(){
+	function createCover(){
 		if ($this->input->is_ajax_request()) {
 				$this->load->library('upload');
-
-                $config['upload_path'] = './uploads/cover/';
-                $config['file_path'] = 'uploads/cover/';
-                $config['thumbnail_path'] = 'uploads/cover/thumbs/';
-                $config['allowed_types'] = 'jpg|png';
-                $config['encrypt_name'] = 'TRUE';
-                $config['max_size'] = '2000';
-                $config['max_width'] = '2024';
-                $config['max_height'] = '2008';
+                $config = array(
+		            'upload_path' => './uploads/cover/',
+			        'file_path' => 'uploads/cover/',
+			        'thumbnail_path' => 'uploads/cover/thumbs/',
+			        'allowed_types' => 'jpg|png',
+			        'encrypt_name' => 'TRUE',
+			        'max_size' => '2000',
+			        'max_width' => '2024',
+			        'max_height' => '2008',
+			        'tabla' => 'portada'
+		        );
 
                 $this->upload->initialize($config);
                 if (!$this->upload->do_upload('portada')) {
@@ -312,12 +325,14 @@ class Admin extends CI_Controller{
                     $imagen = $file_info['file_name'];
                     $nombre = $file_info['raw_name'];
                             
-                    $datos = array('tipo' => 4,
+                    $data_uno = array(
+                    	'tipo' => 4,
                         'nombre' => $nombre,
                         'ruta' => $config['file_path'].$imagen,
                         'miniatura' => $thumbnail_path
                     );
-				$this->Admin_model->guardarRegistro($datos, 'portada');
+                    $data_dos = NULL;
+				$this->create($data_uno, $data_dos, $config);
 			}
         }
 		else{
@@ -325,39 +340,48 @@ class Admin extends CI_Controller{
 		}
 	}
 
-	function agregarSlide() {  
+	function createSlide() {  
     	if ($this->input->is_ajax_request()) {
             if($this->input->post()){
                 $tipo = $this->input->post('slides', TRUE);
                 $this->load->library('upload');
                 switch ($tipo) {
                     case '1': 	      
-                        $config['upload_path'] = './uploads/slide/';
-                        $config['file_path'] = 'uploads/slide/';
-                        $config['thumbnail_path'] = 'uploads/slide/thumbs/';
-                        $config['allowed_types'] = 'jpg|png';
-                        $config['max_size'] = '2000';
-                        $config['max_width'] = '2024';
-                        $config['max_height'] = '2008';
-                        break;
+                        $config = array(
+		                    'upload_path' => './uploads/slide/',
+			                'file_path' => 'uploads/slide/',
+			                'thumbnail_path' => 'uploads/slide/thumbs/',
+			                'allowed_types' => 'jpg|png',
+			                'max_size' => '2000',
+			                'max_width' => '2024',
+			                'max_height' => '2008',
+			                'tabla' => 'slides'
+		                );
+                    break;
                     case '2':    	      
-                        $config['upload_path'] = './uploads/300x300/';
-                        $config['file_path'] = 'uploads/300x300/';
-                        $config['thumbnail_path'] = 'uploads/300x300/thumbs/';
-                        $config['allowed_types'] = 'jpg|png';
-                        $config['max_size'] = '2000';
-                        $config['max_width'] = '2024';
-                        $config['max_height'] = '2008';
-                        break;
+                        $config = array(
+		                    'upload_path' => './uploads/300x300/',
+			                'file_path' => 'uploads/300x300/',
+			                'thumbnail_path' => 'uploads/300x300/thumbs/',
+			                'allowed_types' => 'jpg|png',
+			                'max_size' => '2000',
+			                'max_width' => '2024',
+			                'max_height' => '2008',
+			                'tabla' => 'slides'
+		                );
+                    break;
                     case '3':  	      
-                        $config['upload_path'] = './uploads/1000x150/';
-                        $config['file_path'] = 'uploads/1000x150/';
-                        $config['thumbnail_path'] = 'uploads/1000x150/thumbs/';
-                        $config['allowed_types'] = 'jpg|png';
-                        $config['max_size'] = '2000';
-                        $config['max_width'] = '2024';
-                        $config['max_height'] = '2008';
-                        break;
+                        	$config = array(
+		                    'upload_path' => './uploads/1000x150/',
+			                'file_path' => 'uploads/1000x150/',
+			                'thumbnail_path' => 'uploads/1000x150/thumbs/',
+			                'allowed_types' => 'jpg|png',
+			                'max_size' => '2000',
+			                'max_width' => '2024',
+			                'max_height' => '2008',
+			                'tabla' => 'slides'
+		                );
+                    break;
                 }
                 $this->upload->initialize($config);
                 if (!$this->upload->do_upload('ruta')) {
@@ -372,13 +396,14 @@ class Admin extends CI_Controller{
                     $ruta = $file_info['file_name'];
                     $thumbnail_path = $config['thumbnail_path'].$file_info['raw_name'].'_thumb'.$file_info['file_ext'];
 
-                    $datos = array('tipo' => $tipo,
-                                   'nombre' => $imagen,
-                                   'ruta' => $config['file_path'].$ruta,
-                                   'miniatura' => $thumbnail_path,
-                                   'estatus' => 0
+                    $data_uno = array(
+                    	'tipo' => $tipo,
+                        'nombre' => $imagen,
+                        'ruta' => $config['file_path'].$ruta,
+                        'miniatura' => $thumbnail_path,
+                        'estatus' => 0
 	                );
-	                $this->Admin_model->guardarRegistro($datos, 'slides');
+	                $this->Admin_model->create($data_uno, $data_dos, $config);
                 }
             }
         }
@@ -623,66 +648,65 @@ class Admin extends CI_Controller{
 	}
 
 	//Eliminar Registro
-	function eliminarUsuario(){
+	function eliminarDatos(){
 		if ($this->input->is_ajax_request()) {
-			$id = $this->input->post('idUsuario', TRUE);
-			$this->Admin_model->eliminarUsuario($id);
-		}
-		else{
-			show_404();
-		}
-	}
-
-	function eliminarContenido(){
-		if ($this->input->is_ajax_request()) {
-			$id = $this->input->post('idCatalogo', TRUE);
-			$query = $this->Admin_model->eliminarContenido($id);
-			if($query == TRUE) {
-				echo json_encode($query);
-				exit();
-			} else{
-				echo json_encode($query);
-				exit();
+			$tabla = $this->input->post('tabla', TRUE);
+			switch ($tabla) {
+				case 'usuario':
+					$data = array(
+						'id' => $this->input->post('id', TRUE),
+						'primary_id' => 'id',
+						'foreign_id' => 'usuario_id',
+						't_uno' => 'usuario',
+						't_dos' => 'cliente'
+					);
+				break;
+				case 'contenido':
+					$data = array(
+						'id' => $this->input->post('id', TRUE),
+						'primary_id' => 'id',
+						'foreign_id' => 'contenido_id',
+						't_uno' => 'contenido',
+						't_dos' => 'tipo_contenido'
+					);
+				break;
+				case 'autor':
+					$data = array(
+						'id' => $this->input->post('id', TRUE),
+						'primary_id' => 'id',
+						'foreign_id' => NULL,
+						't_uno' => 'autor',
+						't_dos' => NULL
+					);
+				break;
+				case 'categoria':
+					$data = array(
+						'id' => $this->input->post('id', TRUE),
+						'primary_id' => 'id',
+						'foreign_id' => NULL,
+						't_uno' => 'categoria',
+						't_dos' => NULL
+					);
+				break;
 			}
+			$this->eliminarRegistro($data);
 		}
 		else{
 			show_404();
 		}
 	}
 
-	function eliminarAutor(){
-		if ($this->input->is_ajax_request()) {
-			$id = $this->input->post('idAutor', TRUE);
-			$query = $this->Admin_model->eliminarRegistro($id, 'autor');
-			if($query == TRUE) {
-				echo json_encode($query);
-				exit();
-			} else{
-				echo json_encode($query);
-				exit();
-        	}
-		}
-		else{
-			show_404();
+	function eliminarRegistro($data){
+		$query = $this->Admin_model->eliminarRegistro($data);
+		if($query == TRUE) {
+			echo json_encode($query);
+			exit();
+		} else{
+			echo json_encode($query);
+			exit();
 		}
 	}
 
-	function eliminarCategoria(){
-		if ($this->input->is_ajax_request()) {
-			$id = $this->input->post('idCategoria', TRUE);
-			$query = $this->Admin_model->eliminarRegistro($id, 'categoria');
-			if($query == TRUE) {
-				echo json_encode($query);
-				exit();
-			} else{
-				echo json_encode($query);
-				exit();
-        	}
-		}
-		else{
-			show_404();
-		}
-	}
 
 	function eliminarPortada(){
 		if ($this->input->is_ajax_request()) {
@@ -722,23 +746,20 @@ class Admin extends CI_Controller{
 		}
 	}
 
-	function eliminarNoticia(){
-		if ($this->input->is_ajax_request()) {
-			$id = $this->input->post('idNoticias', TRUE);
-			$this->Admin_model->eliminarRegistro($id, 'noticias');
-		}
-		else{
-			show_404();
-		}
-	}
-
 	//Cambiar Status a Registro 
-	function estatusUsuario(){
+	function estatusRegistro(){
 		if ($this->input->is_ajax_request()) {
-			$id = $this->input->post('idUsuario', TRUE);
+			$id = $this->input->post('id', TRUE);
 			$datos = $this->Admin_model->getUsuario($id);
 			$estatus = ($datos->estatus == 1) ? 0 : 1;
-			$this->Admin_model->cambiarStatus($id, $estatus, 'usuario');
+			$query = $this->Admin_model->cambiarStatus($id, $estatus, 'usuario');
+			if($query == TRUE) {
+				echo json_encode($query);
+				exit();
+			} else{
+				echo json_encode($query);
+				exit();
+        	}
 		}
 		else{
 			show_404();
@@ -821,32 +842,8 @@ class Admin extends CI_Controller{
 
     function listarPortada(){
 		if ($this->input->is_ajax_request()) {
-			$portada = $this->Admin_model->mostrarPortada();
+			$portada = $this->Admin_model->listarDatos('portada');
 			echo json_encode($portada);
-			exit();
-		}
-		else{
-			show_404();
-		}
-	}
-
-    function listarSlides(){
-		if ($this->input->is_ajax_request()) {
-			$tipo = $this->input->post('tipo', TRUE);
-			$datos = $this->Admin_model->mostrarSlides($tipo);
-			echo json_encode($datos);
-			exit();
-		}
-		else{
-			show_404();
-		}
-	}
-
-	function listarNoticias(){
-		if ($this->input->is_ajax_request()) {
-			$buscar = $this->input->post("buscar_noticia");
-			$datos = $this->Admin_model->mostrarNoticias($buscar);
-			echo json_encode($datos);
 			exit();
 		}
 		else{

@@ -25,7 +25,7 @@
             </div>
             <div class="modal-body">
                 <form role="form" id="form-contenido" onsubmit="return false">
-                    <input type="hidden" id="idCatalogo" name="idCatalogo" value="">
+                    <input type="hidden" id="idContenido" name="idContenido" value="">
                     <div class="form-group">
                         <div class="input-group">
                             <label class="input-group-addon">Tipo:</label>

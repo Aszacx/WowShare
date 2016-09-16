@@ -15,6 +15,7 @@
                 <div class="table-responsive text-center" id="tabla-portadas"> 
                             
                 </div> 
+                <div class="text-center" id="paginacion-portadas"></div>
             </div>
         </div>
     </div>

@@ -3,18 +3,18 @@ $(document).ready(function() {
     
     listarAutor();
     listarCategoria();
-    //listarSlides(1);
-    //listarSlides(2);
-    //listarSlides(3);
-    //listarNoticias();
-    //listarPortada();
+    listarPortada();
+    //gestionarSlides(1);
+    //gestionarSlides(2);
+    //gestionarSlides(3);
 
     //Lista los datos en modal respectivo
-    //gestionarUsuarios("", 1); 
-    //gestionarContenido("", 1);
+    gestionarUsuarios("", 1); 
+    gestionarContenido("", 1);
     gestionarAutores("", 1);
     gestionarCategorias("", 1);
-    //gestionarPortadas("", 1);
+    gestionarNoticias("", 1);
+    gestionarPortadas(1);
 
 });
 
@@ -59,4 +59,81 @@ function paginarRegistros(pagina, total_registros, cantidad) {
 
     paginador += "</ul>";
     return paginador;
+}
+
+function eliminarRegistro(id, tabla){
+    var pregunta = confirm("¿Esta seguro de eliminar este usuario?");
+    if(pregunta == true){
+        $.ajax({
+            type: "POST",
+            url: "admin/eliminarDatos",
+            cache: false,
+            data:{id: id, tabla: tabla},
+            dataType: "JSON"
+        }).success( function(response){
+            if(response === true) {
+                switch(tabla){
+                    case "usuario":
+                        gestionarUsuarios("", 1);
+                        $("#msj-usuario").addClass("alert text-center alert-danger alert-accion").html("Registro eliminado.").show(100).delay(3500).hide(100);
+                    break;
+                    case "contenido":
+                        gestionarContenido("", 1);
+                        $("#msj-contenido").addClass("alert text-center alert-danger alert-accion").html("Registro eliminado.").show(100).delay(3500).hide(100);
+                    break;
+                    case "autor":
+                        gestionarAutores("", 1);
+                        $("#msj-autor").addClass("alert text-center alert-danger alert-accion").html("Registro eliminado.").show(100).delay(3500).hide(100);
+                    break;
+                    case "categoria":
+                        gestionarCategorias("", 1);
+                        $("#msj-categoria").addClass("alert text-center alert-danger alert-accion").html("Registro eliminado.").show(100).delay(3500).hide(100);
+                    break;
+                }    
+            } else {
+                switch(tabla){
+                    case "usuario":
+                        $("#msj-usuario").addClass("alert text-center alert-danger alert-accion").html("Error al eliminar.").show(100).delay(3500).hide(100);
+                    break;
+                    case "contenido":
+                        $("#msj-contenido").addClass("alert text-center alert-danger alert-accion").html("Error al eliminar.").show(100).delay(3500).hide(100);
+                    break;
+                    case "autor":
+                        $("#msj-autor").addClass("alert text-center alert-danger alert-accion").html("Error al eliminar.").show(100).delay(3500).hide(100);
+                    break;
+                    case "categoria":
+                        $("#msj-categoria").addClass("alert text-center alert-danger alert-accion").html("Error al eliminar.").show(100).delay(3500).hide(100);
+                    break;
+                }
+            }     
+        });
+    }
+}
+
+function estatusRegistro(id, tabla){
+    var pregunta = confirm("¿Seguro de cambiar estatus de este usuario?");
+    if(pregunta == true){
+        $.ajax({
+            type:"POST",
+            url: "admin/estatus",
+            cache: false,
+            data:{id:id, tabla:tabla},
+            dataType: "JSON"
+        }).success( function(response){
+            if(response === true) {
+                switch(tabla){
+                    case "usuario":
+                        gestionarUsuarios("", 1);
+                        $("#msj-usuario").addClass("alert text-center alert-info alert-accion").html("Actualización con exito.").show(200).delay(2500).hide(200);
+                    break;
+                }    
+            } else {
+                switch(tabla){
+                    case "usuario":
+                        $("#msj-usuario").addClass("alert text-center alert-danger alert-accion").html("Error al actualizar.").show(100).delay(3500).hide(100);
+                    break;
+                }
+            }
+        });
+    }
 }

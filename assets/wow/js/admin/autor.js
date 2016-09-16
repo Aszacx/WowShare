@@ -14,7 +14,7 @@
         $("#btn-autor").removeClass('btn-warning');
         $("#btn-autor").addClass('btn-success').val("Guardar");
         $("#form-autor")[0].reset();
-        $("#form-autor").attr("action", "admin/agregarAutor");
+        $("#form-autor").attr("action", "admin/crearDatos");
         $("#modal-autor").modal({
             show:true,
             backdrop:"static"
@@ -56,11 +56,13 @@
 
         var $form = $(e.target),
             fv    = $form.data("formValidation");
+        var extraData = $form.serializeArray();
+        extraData.push( {name:'tabla', value:'autor'} );
 
         $.ajax({
             url: $form.attr("action"),
             type: "POST",
-            data: $form.serialize(),
+            data: $.param(extraData),
             dataType: "JSON"
         }).success( function(response) {
             $("#msj-autor").removeClass();
@@ -92,8 +94,9 @@
     //Eliminar Autor
     $("body").on("click", "#tabla-autores #eliminar-autor", function(event){
         $("#msj-autor").removeClass();
-        idAutor = $(this).attr("value");
-        eliminarAutor(idAutor);
+        id = $(this).attr("value");
+        tabla = "autor";
+        eliminarRegistro(id, tabla);
     });
 
     //Paginación
@@ -108,15 +111,15 @@
 function gestionarAutores(buscar, pagina){
     $.ajax({
         type: "POST",
-        url: "admin/gestionarAutores",
+        url: "admin/leerDatos",
         cache: false,
-        data: {buscar_autor: buscar, pagina_autor: pagina},
+        data: {buscar_autor: buscar, pagina_autor: pagina, tabla: 'autor'},
         dataType: "JSON",
     }).success( function(datos){
         html = "<table class='table table-bordered'><thead>";
         html += "<tr><th>ID</th><th>Autor</th><th>Acciones</th></tr>";
         html += "</thead><tbody>";
-        $.each(datos.autor, function (key, item){
+        $.each(datos.registros, function (key, item){
             html += "<tr><td>"+item.id+"</td><td>"+item.autor+"</td><td>"; 
             html += " <a href="+item.id+" title='Editar' class='btn btn-primary btn-xs'><i class='glyphicon glyphicon-pencil'></i></a>"; 
             html += " <button type='button' id='eliminar-autor' title='Eliminar' class='btn btn-danger btn-xs' value="+item.id+"><i class='glyphicon glyphicon-trash'></i></button></td></tr>";
@@ -136,7 +139,7 @@ function listarAutor(){
         url:"admin/listarAutor",
         cache: false,
         dataType: "JSON",
-        success: function(datos){
+    }).success( function(datos){
             html = "<label class='input-group-addon'>Autor:</label>";
             html += "<select id='autor' name='autor' class='form-control'>";                  
             html += "<option value=''>Selecciona Autor</option>";
@@ -146,7 +149,6 @@ function listarAutor(){
             html += "</select>";
             html += "<span class='input-group-btn'><button class='btn btn-primary' type='button' id='nuevo-autor'><i class='fa fa-plus'></i></button></span>";
             $("#lista-autor").html(html);
-        }
     });
 }
 

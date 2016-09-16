@@ -16,12 +16,15 @@ class Admin_Model extends CI_Model {
     }
 
     //Listar Datos
-    function mostrarUsuarios($buscar = NULL){
+    function obtenerUsuarios($buscar = NULL, $inicio = FALSE, $cantidad = FALSE){
+        if ($inicio !== FALSE && $cantidad !== FALSE) {
+            $this->db->limit($cantidad, $inicio);
+        }
         $query = $this->db
-        ->select('u.id,u.nombre,u.apellido,u.email,p.pais,m.membresia,c.caducidad,fecha_registro,u.estatus')
+        ->select('u.id,u.nombre,u.apellido,u.email,p.pais,m.membresia, c.caducidad,fecha_registro,u.estatus')
         ->from('usuario as u')
         ->join('cliente as c','u.id = c.usuario_id','LEFT')
-        ->join('pais as p', 'p.idPais = c.pais_id')
+        ->join('pais as p', 'p.id = c.pais_id')
         ->join('membresia as m', 'm.id = c.membresia_id')
         ->where('u.tipo = 3')
         ->like('u.nombre', $buscar)
@@ -32,7 +35,7 @@ class Admin_Model extends CI_Model {
         return $query->result();
     }
 
-    function mostrarContenido($buscar = NULL, $inicio = FALSE, $cantidad = FALSE){
+    function obtenerContenidos($buscar = NULL, $inicio = FALSE, $cantidad = FALSE){
         if ($inicio !== FALSE && $cantidad !== FALSE) {
             $this->db->limit($cantidad, $inicio);
         } 
@@ -40,8 +43,8 @@ class Admin_Model extends CI_Model {
         ->select('c.id ,c.titulo, a.autor, cat.categoria, tc.anio, tc.enlace, c.estatus')
         ->from('contenido as c')
         ->join('tipo_contenido as tc', 'c.id = tc.contenido_id', 'LEFT')
-        ->join('autor as a', 'cat.autor_id = a.id', 'LEFT')
-        ->join('categoria as cat', 'cat.categoria_id = cat.id', 'LEFT')
+        ->join('autor as a', 'c.autor_id = a.id', 'LEFT')
+        ->join('categoria as cat', 'c.categoria_id = cat.id', 'LEFT')
         ->like('c.titulo', $buscar)
         ->or_like('a.autor', $buscar)
         ->or_like('cat.categoria', $buscar)
@@ -50,7 +53,7 @@ class Admin_Model extends CI_Model {
         return $query->result();
     }
 
-    function mostrarCategorias($buscar = NULL, $inicio = FALSE, $cantidad = FALSE){
+    function obtenerCategorias($buscar = NULL, $inicio = FALSE, $cantidad = FALSE){
         $this->db->like('categoria', $buscar)->order_by('categoria', 'ASC');
         if ($inicio !== FALSE && $cantidad !== FALSE) {
             $this->db->limit($cantidad, $inicio);
@@ -59,7 +62,7 @@ class Admin_Model extends CI_Model {
         return $query->result();
     }
 
-    function mostrarAutores($buscar = NULL, $inicio = FALSE, $cantidad = FALSE) {
+    function obtenerAutores($buscar = NULL, $inicio = FALSE, $cantidad = FALSE) {
         $this->db->like('autor', $buscar)->order_by('autor', 'ASC');
         if ($inicio !== FALSE && $cantidad !== FALSE) {
             $this->db->limit($cantidad, $inicio);
@@ -68,7 +71,7 @@ class Admin_Model extends CI_Model {
         return $query->result();
     }
 
-    function mostrarPortada(){
+    function obtenerPortadas(){
         $query = $this->db
         ->from('portada')
         ->order_by("idPortada", "ASC")
@@ -76,7 +79,10 @@ class Admin_Model extends CI_Model {
         return $query->result();
     }
 
-    function mostrarSlides($tipo){
+    function obtenerSlides($tipo, $inicio = FALSE, $cantidad = FALSE){
+        if ($inicio !== FALSE && $cantidad !== FALSE) {
+            $this->db->limit($cantidad, $inicio);
+        }
         $query = $this->db
         ->from('slides')
         ->where('tipo', $tipo)
@@ -85,7 +91,10 @@ class Admin_Model extends CI_Model {
         return $query->result();
     }
 
-    function mostrarNoticias($buscar = NULL){
+    function obtenerNoticias($buscar = NULL, $inicio = FALSE, $cantidad = FALSE){
+        if ($inicio !== FALSE && $cantidad !== FALSE) {
+            $this->db->limit($cantidad, $inicio);
+        }
         $query = $this->db
         ->select('n.id, n.titulo, n.fecha, n.estatus, tn.tipo')
         ->from('noticias as n')
@@ -99,37 +108,23 @@ class Admin_Model extends CI_Model {
     //Fin listar Datos
 
     //Guardar Datos
-    function guardarUsuario($datos, $data) {     
-        $this->db->insert('usuario', $datos);
-        $data2 = array(
-            'usuario_id' => $this->db->insert_id(),
-            'pais_id' => $data['pais'],
-            'vida' => $data['vida'],
-            'membresia_id' => $data['membresia']
-        );
-        $this->db->insert('cliente', $data2);
+    function guardar($data_uno = FALSE, $data_dos = FALSE, $config = array()) {
+        if($data_uno == TRUE && $data_dos == TRUE && $config == TRUE){
+            exit();
+            $this->db->insert($config['t_uno'], $data_uno);
+            $this->db
+            ->set($config['foreign_id'], $this->db->insert_id())
+            ->insert($config['t_dos'], $data_dos);
+        }
+        else if($data_uno == TRUE && $data_dos == FALSE && $config == TRUE){
+            $this->db->insert($config['tabla'], $data_uno);
+        }
         if($this->db->affected_rows() > 0){
             return TRUE;
         }
         else{
             return FALSE;
         }  
-    }
-
-    function guardarContenido($datos, $data){
-        $this->db->insert('contenido', $datos);
-        $dato = array(
-            'cpntenido_id' => $this->db->insert_id(),
-            'tipo' => $data['tipo'],
-            'enlace' => $data['enlace'],
-            'anio' => $data['anio'],
-        );
-        $this->db->insert('tipo_contenido', $dato);
-        if($this->db->affected_rows() > 0) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
     }
 
     function guardarRegistro($datos, $tabla) {
@@ -226,13 +221,13 @@ class Admin_Model extends CI_Model {
     //Fin actualizar Datos
 
     //Eliminar Datos
-    function eliminarRegistro($id, $tabla1 = FALSE, $tabla2 = FALSE){
-        if($tabla1 == TRUE && $tabla2 == TRUE){
-            $this->db->delete($tabla2, array('contenido_id' => $id));
-            $this->db->delete($tabla1, array('id' => $id));
+    function eliminarRegistro($data){
+        if($data['t_uno'] == TRUE && $data['t_dos'] == TRUE){
+            $this->db->delete($data['t_dos'], array($data['foreign_id'] => $data['id']));
+            $this->db->delete($data['t_uno'], array($data['primary_id'] => $data['id']));
         }
-        else if($tabla1 == TRUE && $tabla2 == FALSE){
-            $this->db->delete($tabla1, array('id' => $id));
+        else if($data['t_uno'] == TRUE && $data['t_dos'] == FALSE){
+            $this->db->delete($data['t_uno'], array($data['primary_id'] => $data['id']));
         }
         if($this->db->affected_rows() > 0) {
             return TRUE;
@@ -246,6 +241,11 @@ class Admin_Model extends CI_Model {
     function cambiarStatus($id, $estatus, $tabla){
         $this->db->where('id', $id);
         $this->db->update($tabla, array('estatus' => $estatus));
+        if($this->db->affected_rows() > 0) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
         //usuario, contenido, slides, noticias
     }
 

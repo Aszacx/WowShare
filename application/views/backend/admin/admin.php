@@ -106,7 +106,7 @@
                             <div class="col col-md-6 text-right">
                                 <br />
                                 <div class="btn-group" role="group">
-                                    <button class="btn btn-success btn-sm" id="nuevaNoticia" title="Agregar Noticia"><i class="fa fa-plus-square fa-2x"></i></button>
+                                    <button class="btn btn-success btn-sm" id="nueva-noticia" title="Agregar Noticia"><i class="fa fa-plus-square fa-2x"></i></button>
                                 </div>
                                 <br />
                             </div>
@@ -114,17 +114,18 @@
                         <hr />
                         <div class="row">
                             <div class="col col-md-8">
-                                <div class="alert alert-info text-center mensaje" id="msjNoticia" style="display: none;">
+                                <div class="alert alert-info text-center mensaje" id="msj-noticia" style="display: none;">
                             </div>  
                             </div>
                             <div class="col col-md-4">
-                                <input type="text" id="buscarNoticia" class="form-control" placeholder="Buscar Noticias/Guías">
+                                <input type="text" id="buscar-noticia" class="form-control" placeholder="Buscar Noticias/Guías">
                             </div>
                         </div>
                         <hr>
-                        <div class="table-responsive text-center" id="tablaNoticias"> 
+                        <div class="table-responsive text-center" id="tabla-noticias">
                             
-                        </div>	
+                        </div>
+                        <div class="text-center" id="paginacion-noticias"></div>	
                     </div>
                     <!--Gestión de Slide-->
                     <div role="tabpanel" class="tab-pane" id="slide">
@@ -133,7 +134,7 @@
                         <div class="col col-md-1"></div>
                         <div class="col col-md-10">
                             <?php //echo form_open_multipart("backend/admin/do_upload") ?>
-                            <form method="POST" enctype="multipart/form-data" id="formSlide" onsubmit="return false">
+                            <form method="POST" enctype="multipart/form-data" id="form-slide" onsubmit="return false">
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="input-group-addon">Tipo:</label>
@@ -155,7 +156,7 @@
                                     <button class="btn btn-default" onclick="agregarSlide();">Subir</button>
                                 </div>
                             </form>
-                            <div class="alert alert-info text-center mensaje msjSlide" style="display: none;"></div> 
+                            <div class="alert alert-info text-center mensaje msj-slide" style="display: none;"></div> 
                             <div class="table-responsive text-center slides" id="tablaSlides">
                                 
                             </div>

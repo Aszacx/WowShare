@@ -14,7 +14,7 @@
         $("#btn-categoria").removeClass('btn-warning');
         $("#btn-categoria").addClass('btn-success').val("Guardar");
         $("#form-categoria")[0].reset();
-        $("#form-categoria").attr("action", "admin/agregarCategoria");
+        $("#form-categoria").attr("action", "admin/crearDatos");
         $("#modal-categoria").modal({
             show:true,
             backdrop:"static"
@@ -58,11 +58,13 @@
 
         var $form = $(e.target),
             fv    = $form.data("formValidation");
+        var extraData = $form.serializeArray();
+        extraData.push( {name:'tabla', value:'categoria'} );
 
         $.ajax({
             url: $form.attr("action"),
             type: "POST",
-            data: $form.serialize(),
+            data: $.param(extraData),
             dataType: "JSON"
         }).success( function(response) {
             $("#msj-categoria").removeClass();
@@ -94,8 +96,9 @@
     //Eliminar Categoría
     $("body").on("click","#tabla-categorias #eliminar-categoria",function(event){
         $("#msj-categoria").removeClass();
-        idCategoria = $(this).attr("value");
-        eliminarCategoria(idCategoria);
+        id = $(this).attr("value");
+        tabla = "categoria";
+        eliminarRegistro(id, tabla);
     });
 
     //Paginación
@@ -122,15 +125,15 @@ tipoContenido();
 function gestionarCategorias(buscar, pagina){
     $.ajax({
         type: "POST",
-        url: "admin/gestionarCategorias",
+        url: "admin/leerDatos",
         cache: false,
-        data: {buscar_categoria: buscar, pagina_categoria: pagina},
+        data: {buscar_categoria: buscar, pagina_categoria: pagina, tabla: "categoria"},
         dataType: "JSON", 
     }).success( function(datos){
         html = "<table class='table table-bordered'><thead>";
         html += "<tr><th>Categoría</th><th>Acciones</th></tr>";
         html += "</thead><tbody>";
-        $.each(datos.categoria, function (key, item){
+        $.each(datos.registros, function (key, item){
             html += "<tr><td>"+item.categoria+"</td><td>";
             html += " <a href="+item.id+" title='Editar' class='btn btn-primary btn-xs'><i class='glyphicon glyphicon-pencil'></i></a>"; 
             html += " <button type='button' id='eliminar-categoria' title='Eliminar' class='btn btn-danger btn-xs' value="+item.id+"><i class='glyphicon glyphicon-trash'></i></button></td></tr>";
@@ -184,25 +187,4 @@ function editarCategoria(id){
             });
         }
     });
-}
-
-function eliminarCategoria(id){
-    var pregunta = confirm("¿Esta seguro de eliminar esta categoría?");
-    if(pregunta == true){
-        $.ajax({
-            type:"POST",
-            url: "admin/eliminarCategoria",
-            cache: false,
-            data: "idCategoria= "+id,
-            dataType: "JSON",
-            }).success( function(response) {
-            if(response === true) {
-                listarCategoria();
-                gestionarCategorias("", 1);
-                $("#msj-categoria").addClass("alert text-center alert-success alert-accion").html("Registro eliminado.").show(100).delay(3500).hide(100);
-            } else {
-                $("#msj-categoria").addClass("alert text-center alert-danger alert-accion").html("Error al eliminar.").show(100).delay(3500).hide(100);
-            }
-        });
-    }
 }

@@ -12,7 +12,7 @@
                     <div class="form-group">
                         <div class="input-group">
                             <label class="input-group-addon">Autor:</label>
-                            <input name="add_autor" type="text" id="edit-autor" class="form-control">
+                            <input name="autor" type="text" id="edit-autor" class="form-control">
                         </div>
                     </div>
                     <div class="modal-footer">

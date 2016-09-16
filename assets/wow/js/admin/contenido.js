@@ -5,7 +5,7 @@
         $("#btn-contenido").removeClass('btn-warning');
         $("#btn-contenido").addClass('btn-success').val("Guardar");
         $("#form-contenido")[0].reset();
-        $("#form-contenido").attr("action", "admin/agregarContenido");
+        $("#form-contenido").attr("action", "admin/crearDatos");
         $("#modal-contenido").modal({
             show:true,
             backdrop:"static"
@@ -98,11 +98,13 @@
 
         var $form = $(e.target),
             fv    = $form.data("formValidation");
+        var extraData = $form.serializeArray();
+        extraData.push( {name:'tabla', value:'contenido'} );
 
         $.ajax({
             url: $form.attr("action"),
             type: "POST",
-            data: $form.serialize(),
+            data: $.param(extraData),
             dataType: "JSON"
         }).success( function(response) {
             if(response === true && $("#btn-contenido").val() == "Guardar") {
@@ -131,8 +133,9 @@
 
     //Eliminar Contenido
     $("body").on("click","#tabla-contenido #eliminar-contenido",function(event){
-        idContenido = $(this).attr("value");
-        eliminarContenido(idContenido);
+        id = $(this).attr("value");
+        tabla = "contenido";
+        eliminarRegistro(id, tabla);
     });
 
     //Estatus de Contenido
@@ -150,31 +153,31 @@
     });
 
 //Activar select Portada para Videos
-function tipoUsuario() {
-    var memb = $("#tipo-contenido").val();
-    if(memb == 4){
+function tipoContenido() {
+    var tipo = $("#tipo-contenido").val();
+    if(tipo == 4){
         $('#portada').show();
     }else{
         $('#portada').hide();
     }
 }
-$('#tipoUsuario').change(tipoUsuario);
-tipoUsuario();
+$('#tipo-contenido').change(tipoContenido);
+tipoContenido();
 
 //Gestión de Contenido
 function gestionarContenido(buscar, pagina){
     $.ajax({
         type:"POST",
-        url:"admin/gestionarContenido",
+        url:"admin/leerDatos",
         cache: false,
-        data:{buscar_contenido:buscar, pagina_contenido:pagina},
+        data:{buscar_contenido:buscar, pagina_contenido:pagina, tabla: "contenido"},
         dataType: "JSON",
     }).success( function(datos){
             html = "<table class='table table-bordered'><thead>";
             html += "<tr><th>#ID</th><th>Titulo</th><th>Autor</th><th>Categoria</th><th>Año</th>";
             html += "<th>Acciones</th></tr>";
             html += "</thead><tbody>";
-            $.each(datos.contenido, function (key, item){
+            $.each(datos.registros, function (key, item){
                 html += "<tr><td>"+item.id+"</td><td>"+item.titulo+"</td><td>"+item.autor+"</td>";
                 html += "<td>"+item.categoria+"</td><td>"+item.anio+"</td>";
                 html += "<td><button type='button' id='estatus-contenido' title='Estatus' class='btn btn-xs' value="+item.id+">"+item.estatus+"</button>"; 
@@ -182,11 +185,11 @@ function gestionarContenido(buscar, pagina){
                 html += " <button type='button' id='eliminar-contenido' title='Eliminar' class='btn btn-danger btn-xs' value="+item.id+"><i class='glyphicon glyphicon-trash'></i></button></td></tr>";
             });
             html +="</tbody></table>";
-            $("#tablaContenido").html(html);
+            $("#tabla-contenido").html(html);
             total_registros = datos.total_registros;
             cantidad = datos.cantidad;
             paginarRegistros(pagina, total_registros, cantidad);
-            $("#paginacion_contenido").html(paginador);
+            $("#paginacion-contenido").html(paginador);
     });
 }
 
@@ -201,7 +204,7 @@ function filtrarContenido(filtro){
             html += "<tr><th>#ID</th><th>Titulo</th><th>Autor</th><th>Categoria</th><th>Año</th>";
             html += "<th>Acciones</th></tr>";
             html += "</thead><tbody>";
-            $.each(datos.contenido, function (key, item){
+            $.each(datos.registros, function (key, item){
                 html += "<tr><td>"+id+"</td><td>"+titulo+"</td><td>"+autor+"</td>";
                 html += "<td>"+categoria+"</td><td>"+anio+"</td>";
                 html += "<td><button type='button' id='estatus-contenido' title='Estatus' class='btn btn-xs' value="+id+">"+estatus+"</button>"; 
