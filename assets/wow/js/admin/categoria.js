@@ -71,14 +71,14 @@
             if(response === true && $("#btn-categoria").val() == "Guardar") {
                 $("#form-categoria")[0].reset();
                 $("#modal-categoria").modal("hide");
-                listarCategoria();
+                listarDatos("categoria");
                 gestionarCategorias("", 1);
                 $("#msj-categoria").addClass("alert text-center alert-success alert-accion").html("Categoria registrada.").show(100).delay(3500).hide(100);
             }
             else if(response === true && $("#btn-categoria").val() == "Editar") {
                 $("#form-categoria")[0].reset();
                 $("#modal-categoria").modal("hide");
-                listarCategoria();
+                listarDatos("categoria");
                 gestionarCategorias("", 1);
                 $("#msj-categoria").addClass("alert text-center alert-warning alert-accion").html("Categoria editada.").show(100).delay(3500).hide(100);
             } else {
@@ -144,26 +144,6 @@ function gestionarCategorias(buscar, pagina){
         cantidad = datos.cantidad;
         paginarRegistros(pagina, total_registros, cantidad);
         $("#paginacion-categorias").html(paginador);
-    });
-}
-
-function listarCategoria(){
-    $.ajax({
-        type:"POST",
-        url:"admin/listarCategoria",
-        cache: false,
-        dataType: "JSON",
-        success: function(datos){
-            html = "<label class='input-group-addon'>Categoria:</label>";
-            html += "<select id='categoria' name='categoria' class='form-control'>";                    
-            html += "<option value=''>Selecciona Categoria</option>";
-            $.each(datos, function (key, item){
-                html += "<option value="+item.id+">"+item.categoria+"</option>";
-            });
-            html += "</select>";
-            html += "<span class='input-group-btn'><button class='btn btn-primary' type='button' id='nueva-categoria'><i class='fa fa-plus'></i></button></span>";
-            $("#lista-categoria").html(html);
-        }
     });
 }
 

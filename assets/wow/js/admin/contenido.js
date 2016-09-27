@@ -140,8 +140,9 @@
 
     //Estatus de Contenido
     $("body").on("click","#tabla-contenido #estatus-contenido", function(event){
-        idContenido = $(this).attr("value");       
-        estatusContenido(idContenido); 
+        id = $(this).attr("value");
+        tabla = "contenido";      
+        estatusRegistro(id, tabla); 
     });
 
     //Paginación
@@ -265,40 +266,4 @@ function editarContenido(id){
             });
         }
     });
-}
-
-function eliminarContenido(id){
-    var pregunta = confirm("¿Esta seguro de eliminar este contenido?");
-    if(pregunta == true){
-        $.ajax({
-            type:"POST",
-            url: "admin/eliminarContenido",
-            cache: false,
-            data:"idContenido= "+id,
-            dataType: "JSON"
-        }).success( function(response){
-            if(response === true) {
-                gestionarContenido("", 1);
-                $("#msjContenido").addClass("alert-success").html("Registro eliminado.").show(100).delay(3500).hide(100);
-            } else {
-                $("#msjContenido").addClass("alert-danger").html("Error al eliminar.").show(100).delay(3500).hide(100);
-            }
-        });
-    }
-}
-
-function estatusContenido(id){
-    var pregunta = confirm("¿Seguro de cambiar estatus de este contenido?");
-    if(pregunta == true){
-        $.ajax({
-            type:"POST",
-            url: "admin/estatusContenido",
-            cache: false,
-            data:"idContenido= "+id,
-            success: function(){
-                $("#msjContenido").addClass("mensaje").html("Actualización correcta.").show(200).delay(2500).hide(200);
-                gestionarContenido("", 1);
-            }
-        });
-    }
 }

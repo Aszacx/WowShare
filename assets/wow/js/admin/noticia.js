@@ -57,7 +57,7 @@ function gestionarNoticias(buscar, pagina){
         type: "POST",
         url: "admin/leerDatos",
         cache: false,
-        data: {buscar_noticia:buscar, pagina_noticia: pagina, tabla: "noticias"},
+        data: {buscar_noticia: buscar, pagina_noticia: pagina, tabla: "noticia"},
     }).success( function(datos){
             html = "<table class='table table-bordered'><thead>";
             html += "<tr><th>#ID</th><th>Titulo</th><th>Tipo</th><th>Fecha</th><th>Acciones</th>";
@@ -139,36 +139,4 @@ function actualizarNoticia(){
             alert("Hubo un error");
         }
     });
-}
-
-function eliminarNoticia(id){
-    var pregunta = confirm("¿Esta seguro de eliminar este contenido?");
-    if(pregunta == true){
-        $.ajax({
-            type: "POST",
-            url: "admin/eliminarNoticia",
-            cache: false,
-            data: "idNoticias= "+id,
-            success: function(){
-                gestionarNoticias(buscar, 1);
-                $("#msj-noticia").addClass("mensaje").html("Registro eliminado correctamente.").show(200).delay(2500).hide(200);
-            }
-        });
-    }
-}
-
-function estatusNoticia(id){
-    var pregunta = confirm("¿Seguro de cambiar estatus de este contenido?");
-    if(pregunta == true){
-        $.ajax({
-            type: "POST",
-            url: "admin/estatusNoticia",
-            cache: false,
-            data: "idNoticias= "+id,
-            success: function(){
-                gestionarNoticias(buscar, 1);
-                $("#msj-noticia").addClass("mensaje").html("Actualización con exito.").show(200).delay(2500).hide(200);
-            }
-        });
-    }
 }

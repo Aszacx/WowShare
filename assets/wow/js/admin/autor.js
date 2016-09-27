@@ -69,7 +69,7 @@
             if(response === true && $("#btn-autor").val() == "Guardar") {
                 $("#form-autor")[0].reset();
                 $("#modal-autor").modal("hide");
-                listarAutor();
+                listarDatos("autor");
                 gestionarAutores("", 1);
                 $("#msj-autor").addClass("alert text-center alert-success alert-accion").html("Autor registrado.").show(100).delay(3500).hide(100);
             }
@@ -133,25 +133,6 @@ function gestionarAutores(buscar, pagina){
     });
 }
 
-function listarAutor(){
-    $.ajax({
-        type:"POST",
-        url:"admin/listarAutor",
-        cache: false,
-        dataType: "JSON",
-    }).success( function(datos){
-            html = "<label class='input-group-addon'>Autor:</label>";
-            html += "<select id='autor' name='autor' class='form-control'>";                  
-            html += "<option value=''>Selecciona Autor</option>";
-            $.each(datos, function (key, item) {
-                html += "<option value="+item.id+">"+item.autor+"</option>";
-            });
-            html += "</select>";
-            html += "<span class='input-group-btn'><button class='btn btn-primary' type='button' id='nuevo-autor'><i class='fa fa-plus'></i></button></span>";
-            $("#lista-autor").html(html);
-    });
-}
-
 function editarAutor(id){
     $.ajax({
         type: "POST",
@@ -172,25 +153,4 @@ function editarAutor(id){
                 backdrop:"static"
             });
     });
-}
-
-function eliminarAutor(id){
-    var pregunta = confirm("¿Esta seguro de eliminar este autor?");
-    if(pregunta == true){
-        $.ajax({
-            type: "POST",
-            url: "admin/eliminarAutor",
-            cache: false,
-            data: "idAutor= "+id,
-            dataType: "JSON"
-        }).success( function(response) {
-            if(response === true) {
-                listarAutor();
-                gestionarAutores("", 1);
-                $("#msj-autor").addClass("alert text-center alert-danger alert-accion").html("Registro eliminado.").show(100).delay(3500).hide(100);
-            } else {
-                $("#msj-autor").addClass("alert text-center alert-danger alert-accion").html("Error al eliminar.").show(100).delay(3500).hide(100);
-            }
-        });
-    }
 }

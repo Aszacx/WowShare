@@ -71,11 +71,12 @@ class Admin_Model extends CI_Model {
         return $query->result();
     }
 
-    function obtenerPortadas(){
-        $query = $this->db
-        ->from('portada')
-        ->order_by("idPortada", "ASC")
-        ->get();
+    function obtenerPortadas($buscar = NULL, $inicio = FALSE, $cantidad = FALSE){
+        $this->db->like('nombre', $buscar)->order_by('id', 'ASC');
+        if ($inicio !== FALSE && $cantidad !== FALSE) {
+            $this->db->limit($cantidad, $inicio);
+        }
+        $query = $this->db->get('portada');
         return $query->result();
     }
 
@@ -83,11 +84,7 @@ class Admin_Model extends CI_Model {
         if ($inicio !== FALSE && $cantidad !== FALSE) {
             $this->db->limit($cantidad, $inicio);
         }
-        $query = $this->db
-        ->from('slides')
-        ->where('tipo', $tipo)
-        ->order_by("idSlides", "ASC")
-        ->get();
+        
         return $query->result();
     }
 
@@ -110,7 +107,6 @@ class Admin_Model extends CI_Model {
     //Guardar Datos
     function guardar($data_uno = FALSE, $data_dos = FALSE, $config = array()) {
         if($data_uno == TRUE && $data_dos == TRUE && $config == TRUE){
-            exit();
             $this->db->insert($config['t_uno'], $data_uno);
             $this->db
             ->set($config['foreign_id'], $this->db->insert_id())
@@ -126,17 +122,6 @@ class Admin_Model extends CI_Model {
             return FALSE;
         }  
     }
-
-    function guardarRegistro($datos, $tabla) {
-        $this->db->insert($tabla, $datos);
-        if($this->db->affected_rows() > 0) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
-        //Autor, códigos, categoría, portada, slide, noticias
-    }
-
     //Fin guardar Datos
 
     //Editar Datos
@@ -168,7 +153,7 @@ class Admin_Model extends CI_Model {
     //Obtener datos para llenar formulario de editar
     function getRegistro($id, $tabla) {
         $query = $this->db
-        ->from('autor')
+        ->from($tabla)
         ->where('id', $id)
         ->get();                       
         return $query->row();
@@ -238,7 +223,7 @@ class Admin_Model extends CI_Model {
     //Fin eliminar Datos
 
     //Estatus Datos
-    function cambiarStatus($id, $estatus, $tabla){
+    function actualizarEstatus($id, $estatus, $tabla){
         $this->db->where('id', $id);
         $this->db->update($tabla, array('estatus' => $estatus));
         if($this->db->affected_rows() > 0) {

@@ -118,7 +118,10 @@
                             </div>  
                             </div>
                             <div class="col col-md-4">
-                                <input type="text" id="buscar-noticia" class="form-control" placeholder="Buscar Noticias/Guías">
+                                <div class="right-inner-addon">
+                                    <i class="fa fa-search"></i>                   
+                                    <input type="text" id="buscar-noticia" class="form-control" placeholder="Buscar Noticias/Guías">
+                                </div>
                             </div>
                         </div>
                         <hr>

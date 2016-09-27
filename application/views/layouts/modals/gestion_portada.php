@@ -7,11 +7,23 @@
                 <h4 class="modal-title" id="title-portadas"></h4>
             </div>
             <div class="modal-body">
-                <div class="text-right">
-                    <button class="btn btn-success btn-xs" type='button' id='nueva-portada'><i class='fa fa-plus'></i> Agregar Portada</button>
+                <div class="row">
+                    <div class="col col-md-6">
+                        <div id="msj-portada"></div>
+                    </div>
+                    <div class="col col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                <button class="btn btn-success btn-md" type='button' id='nuevo-portada'><i class='fa fa-plus'></i></button>
+                            </span> 
+                            <div class="right-inner-addon">
+                                <i class="fa fa-search"></i>
+                                <input type="text" id="buscar-portada" class="form-control" placeholder="Buscar Portada">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <br />
-                <div class="alert alert-info text-center mensaje" id="msj-portada" style="display: none;"></div>    
+                <br /> 
                 <div class="table-responsive text-center" id="tabla-portadas"> 
                             
                 </div> 

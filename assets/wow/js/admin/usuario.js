@@ -113,15 +113,15 @@
                 $("#form-usuario")[0].reset();
                 $("#modal-usuario").modal("hide");
                 gestionarUsuarios("", 1);
-                $("#msj-usuario").addClass("alert-success").html("Usuario registrado.").show(100).delay(3500).hide(100);
+                $("#msj-usuario").addClass("alert text-center alert-success alert-accion").html("Usuario registrado.").show(100).delay(3500).hide(100);
             }
             else if(response === true && $("#btn-usuario").val() == "Editar") {
                 $("#form-usuario")[0].reset();
                 $("#modal-usuario").modal("hide");
                 gestionarUsuarios("", 1);
-                $("#msj-usuario").addClass("alert-warning").html("Usuario editado.").show(100).delay(3500).hide(100);
+                $("#msj-usuario").aaddClass("alert text-center alert-warning alert-accion").html("Usuario editado.").show(100).delay(3500).hide(100);
             } else {
-                $("#msj-usuario").addClass("alert-danger").html("Error al registrar.").show(100).delay(3500).hide(100);
+                $("#msj-usuario").addClass("alert text-center alert-danger alert-accion").html("Error al registrar.").show(100).delay(3500).hide(100);
             }
         });
     }); 
@@ -153,7 +153,7 @@
     
     //Refrescar tabla Usuarios
     $("#recargar-usuario").click(function(){
-        listarUsuarios("");
+        gestionarUsuarios("", 1); 
         $("#buscar-usuario").val("");
     });
     

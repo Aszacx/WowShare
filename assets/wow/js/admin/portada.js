@@ -9,7 +9,7 @@
     });
 
     //Abrir modal de Agregar Portada
-    $("body").on("click", "#nueva-portada", function(){
+    $("body").on("click", "#nuevo-portada", function(){
         $("#title-portada").text("Nueva Portada");
         $("#btn-portada").removeClass('btn-warning');
         $("#btn-portada").addClass('btn-success').val("Guardar");
@@ -66,7 +66,7 @@
             if(response === true && $("#btn-portada").val() == "Guardar") {
                 $("#form-portada")[0].reset();
                 $("#modal-portada").modal("hide");
-                listarPortada();
+                listarDatos("portada");
                 gestionarPortadas("", 1);
                 $("#msj-portada").addClass("alert text-center alert-success alert-accion").html("Portada registrada.").show(100).delay(3500).hide(100);
             }
@@ -75,36 +75,44 @@
             }
         });
     });
+
+    //Buscar Portada
+    $("#buscar-portada").keyup(function(){
+        buscar = $("#buscar-portada").val();
+        gestionarPortadas(buscar, 1);
+    });
     
     //Eliminar Portada
     $("body").on("click","#tabla-portadas #eliminar-portada",function(event){
-        idPortada = $(this).attr("value");
-        eliminarPortada(idPortada);
+        id = $(this).attr("value");
+        tabla = "portada";
+        eliminarRegistro(id, tabla);
     });
 
     //Paginación
     $("body").on("click", "#paginacion-portadas li a", function(e){
         e.preventDefault();
         valor = $(this).attr("href");
-        gestionarPortadas(valor);
+        buscar = $("#buscar-portada").val();
+        gestionarPortadas(buscar, valor);
     }); 
 
 //Gestión de Portadas
-function gestionarPortadas(pagina){
+function gestionarPortadas(buscar, pagina){
     $.ajax({
         type:"POST",
-        url:"admin/listarPortada",
+        url:"admin/leerDatos",
         cache: false,
-        data: {pagina_portada: pagina},
+        data: {buscar_portada: buscar, pagina_portada: pagina, tabla: 'portada'},
         dataType: "JSON"
     }).success( function(datos){
             html = "<table class='table table-bordered'><thead>";
             html += "<tr><th>Miniatura</th><th>Nombre</th><th>Acciones</th></tr>";
             html += "</thead><tbody>";
-            $.each(datos.portada, function (key, item){
+            $.each(datos.registros, function (key, item){
                 html += "<tr><td><img src=../"+item.miniatura+"></td><td>"+item.nombre+"</td><td>";
                 //html += "<td><button type='button' id='estatus-usuario' title='Estatus' class='btn btn-xs' value="+item.idUsuario+">"+item.estatus+"</button>"; 
-                html += " <button type='button' id='eliminar-portada' title='Eliminar' class='btn btn-danger btn-md' value="+item.idPortada+"><i class='glyphicon glyphicon-trash'></i></button></td></tr>";
+                html += " <button type='button' id='eliminar-portada' title='Eliminar' class='btn btn-danger btn-md' value="+item.id+"><i class='glyphicon glyphicon-trash'></i></button></td></tr>";
             });
             html +="</tbody></table>";
             $("#tabla-portadas").html(html);
@@ -113,61 +121,4 @@ function gestionarPortadas(pagina){
             paginarRegistros(pagina, total_registros, cantidad);
             $("#paginacion-portadas").html(paginador);
     });
-}
-
-function listarPortada(){
-    $.ajax({
-        type:"POST",
-        url:"admin/listarPortada",
-        cache: false,
-        dataType: "JSON"
-    }).success( function(datos){
-            html = "<label class='input-group-addon'>Portada:</label>";
-            html += "<select id='cover' name='cover' class='form-control'>";                  
-            html += "<option value=''>Selecciona Portada</option>";
-            $.each(datos.portada, function (key, item){
-                html += "<option value="+item.id+">"+item.nombre+"</option>";
-            });
-            html += "</select>";
-            html += "<span class='input-group-btn'><button class='btn btn-primary' type='button' id='nueva-portada'><i class='fa fa-plus'></i></button></span>";
-            $("#lista-portada").html(html);
-    });
-}
-
-/*function agregarPortada(){
-    var formData = new FormData($("#form-portada")[0]);
-    $.ajax({
-        url: "admin/agregarPortada",
-        type: "POST",
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function(){
-            $("#form-portada")[0].reset();
-            $("#modal-portada").modal("hide");
-            listarPortada();
-            gestionarPortadas();
-            $("#msj-portada").addClass("mensaje").html("Imágen subida correctamente.").show(200).delay(2500).hide(200);
-        }
-    });
-}*/
-
-function eliminarPortada(id){
-    var pregunta = confirm("¿Esta seguro de eliminar portada?");
-    if(pregunta == true){
-        $.ajax({
-            type: "POST",
-            url: "admin/eliminarPortada",
-            cache: false,
-            data: "idPortada= "+id,
-            success: function(){
-                gestionarPortadas();
-                $("#msj-portada").addClass("mensaje").html("Registro eliminado correctamente.").show(200).delay(2500).hide(200);
-            },
-            error: function(){
-                $("#msj-portada").addClass("mensaje").html("No se puede eliminar portada.").show(200).delay(2500).hide(200);
-            }
-        });
-    }
 }

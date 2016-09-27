@@ -69,43 +69,28 @@ class Admin extends CI_Controller{
 		if ($this->input->is_ajax_request()) {
 			if($this->input->post()){
 				$tabla = $this->input->post('tabla', TRUE);
+				$data = array(
+					'buscar' => 'buscar_'.$tabla.'',
+					'pagina' => 'pagina_'.$tabla.''
+				);
 				switch ($tabla) {
 					case 'usuario':
-						$data = array(
-							'buscar' => 'buscar_usuario',
-							'pagina' => 'pagina_usuario',
-							'metodo' => 'obtenerUsuarios'
-						);
+						$data['metodo'] = 'obtenerUsuarios';
 					break;
 					case 'contenido':
-						$data = array(
-							'buscar' => 'buscar_contenido',
-							'pagina' => 'pagina_contenido',
-							'metodo' => 'obtenerContenidos'
-						);
+						$data['metodo'] = 'obtenerContenidos';
 					break;
 					case 'autor':
-						$data = array(
-							'buscar' => 'buscar_autor',
-							'pagina' => 'pagina_autor',
-							'metodo' => 'obtenerAutores'
-						);
+						$data['metodo'] = 'obtenerAutores';
 					break;
 					case 'categoria':
-						$data = array(
-							'buscar' => 'buscar_categoria',
-							'pagina' => 'pagina_categoria',
-							'metodo' => 'obtenerCategorias'
-						);
+						$data['metodo'] = 'obtenerCategorias';
 					break;
-					case 'noticias':
-						$data = array(
-							'buscar' => 'buscar_noticia',
-							'pagina' => 'pagina_noticia',
-							'metodo' => 'obtenerNoticias'
-						);
+					case 'noticia':
+						$data['metodo'] = 'obtenerNoticias';
 					break;
 					case 'portada':
+						$data['metodo'] = 'obtenerPortadas';
 					break;
 					case 'slide':
 					break;
@@ -119,22 +104,17 @@ class Admin extends CI_Controller{
 	}
 
 	function gestionarRegistros($data = array()){
-		if ($this->input->is_ajax_request()) {
-			$buscar = $this->input->post($data['buscar']);
-			$num_pagina = $this->input->post($data['pagina']);
-			$cantidad = 5;
-            $inicio = ($num_pagina - 1) * $cantidad;
-            $data = array(
-            	'registros' => $this->Admin_model->$data['metodo']($buscar, $inicio, $cantidad),
-            	'total_registros' => count($this->Admin_model->$data['metodo']($buscar)),
-            	'cantidad' => $cantidad	
-            );
-			echo json_encode($data);
-			exit();
-		}
-		else{
-			show_404();
-		}
+		$buscar = $this->input->post($data['buscar']);
+		$num_pagina = $this->input->post($data['pagina']);
+		$cantidad = 5;
+        $inicio = ($num_pagina - 1) * $cantidad;
+        $data = array(
+           	'registros' => $this->Admin_model->$data['metodo']($buscar, $inicio, $cantidad),
+           	'total_registros' => count($this->Admin_model->$data['metodo']($buscar)),
+           	'cantidad' => $cantidad	
+        );
+		echo json_encode($data);
+		exit();
 	}
 
 	function gestionarSlides(){
@@ -285,16 +265,16 @@ class Admin extends CI_Controller{
 		}
 	
 	}
-	function guardarRegistros($data_uno = array(), $data_dos = array(), $config = array()){	
-        $query = $this->Admin_model->save($data_uno, $data_dos, $config);
-        if($query == TRUE) {
-			echo json_encode($query);
-			exit();
-		} 
-		else{
-			echo json_encode($query);
-			exit();
-		}	
+
+	function guardarRegistros($data_uno = array(), $data_dos = array(), $config = array()){
+		/*print_r($data_uno);
+		print_r($data_dos);
+		print_r($config);
+		exit();*/
+        $query = $this->Admin_model->guardar($data_uno, $data_dos, $config);
+        $query = ($query == TRUE) ? TRUE : FALSE;
+        echo json_encode($query);
+        exit();
 	}
 
 	function createCover(){
@@ -332,11 +312,8 @@ class Admin extends CI_Controller{
                         'miniatura' => $thumbnail_path
                     );
                     $data_dos = NULL;
-				$this->create($data_uno, $data_dos, $config);
+                    $this->guardarRegistros($data_uno, $data_dos, $config);
 			}
-        }
-		else{
-			show_404();
 		}
 	}
 
@@ -345,42 +322,28 @@ class Admin extends CI_Controller{
             if($this->input->post()){
                 $tipo = $this->input->post('slides', TRUE);
                 $this->load->library('upload');
+                $config = array(
+			        'allowed_types' => 'jpg|png',
+			        'max_size' => '2000',
+			        'max_width' => '2024',
+			        'max_height' => '2008',
+			        'tabla' => 'slides'
+		        );
                 switch ($tipo) {
-                    case '1': 	      
-                        $config = array(
-		                    'upload_path' => './uploads/slide/',
-			                'file_path' => 'uploads/slide/',
-			                'thumbnail_path' => 'uploads/slide/thumbs/',
-			                'allowed_types' => 'jpg|png',
-			                'max_size' => '2000',
-			                'max_width' => '2024',
-			                'max_height' => '2008',
-			                'tabla' => 'slides'
-		                );
+                    case '1':
+		                $config['upload_path'] = './uploads/slide/';
+			            $config['file_path'] = 'uploads/slide/';
+			            $config['thumbnail_path'] = 'uploads/slide/thumbs/';
                     break;
-                    case '2':    	      
-                        $config = array(
-		                    'upload_path' => './uploads/300x300/',
-			                'file_path' => 'uploads/300x300/',
-			                'thumbnail_path' => 'uploads/300x300/thumbs/',
-			                'allowed_types' => 'jpg|png',
-			                'max_size' => '2000',
-			                'max_width' => '2024',
-			                'max_height' => '2008',
-			                'tabla' => 'slides'
-		                );
+                    case '2': 
+		                $config['upload_path'] = './uploads/300x300/';
+			            $config['file_path'] = 'uploads/300x300/';
+			            $config['thumbnail_path'] = 'uploads/300x300/thumbs/';
                     break;
-                    case '3':  	      
-                        	$config = array(
-		                    'upload_path' => './uploads/1000x150/',
-			                'file_path' => 'uploads/1000x150/',
-			                'thumbnail_path' => 'uploads/1000x150/thumbs/',
-			                'allowed_types' => 'jpg|png',
-			                'max_size' => '2000',
-			                'max_width' => '2024',
-			                'max_height' => '2008',
-			                'tabla' => 'slides'
-		                );
+                    case '3':
+		                $config['upload_path'] = './uploads/1000x150/';
+			            $config['file_path'] = 'uploads/1000x150/';
+			            $config['thumbnail_path'] = 'uploads/1000x150/thumbs/';
                     break;
                 }
                 $this->upload->initialize($config);
@@ -651,42 +614,27 @@ class Admin extends CI_Controller{
 	function eliminarDatos(){
 		if ($this->input->is_ajax_request()) {
 			$tabla = $this->input->post('tabla', TRUE);
+			$data = array(
+				'id' => $this->input->post('id', TRUE),
+				'primary_id' => 'id'
+			);
 			switch ($tabla) {
 				case 'usuario':
-					$data = array(
-						'id' => $this->input->post('id', TRUE),
-						'primary_id' => 'id',
-						'foreign_id' => 'usuario_id',
-						't_uno' => 'usuario',
-						't_dos' => 'cliente'
-					);
+					$data['foreign_id'] = 'usuario_id';
+					$data['t_uno'] = 'usuario';
+					$data['t_dos'] = 'cliente';
 				break;
 				case 'contenido':
-					$data = array(
-						'id' => $this->input->post('id', TRUE),
-						'primary_id' => 'id',
-						'foreign_id' => 'contenido_id',
-						't_uno' => 'contenido',
-						't_dos' => 'tipo_contenido'
-					);
+					$data['foreign_id'] = 'contenido_id';
+					$data['t_uno'] = 'contenido';
+					$data['t_dos'] = 'tipo_contenido';
 				break;
 				case 'autor':
-					$data = array(
-						'id' => $this->input->post('id', TRUE),
-						'primary_id' => 'id',
-						'foreign_id' => NULL,
-						't_uno' => 'autor',
-						't_dos' => NULL
-					);
-				break;
 				case 'categoria':
-					$data = array(
-						'id' => $this->input->post('id', TRUE),
-						'primary_id' => 'id',
-						'foreign_id' => NULL,
-						't_uno' => 'categoria',
-						't_dos' => NULL
-					);
+				case 'portada':
+					$data['foreign_id'] = NULL;
+					$data['t_uno'] = $tabla;
+					$data['t_dos'] = NULL;
 				break;
 			}
 			$this->eliminarRegistro($data);
@@ -697,34 +645,18 @@ class Admin extends CI_Controller{
 	}
 
 	function eliminarRegistro($data){
-		$query = $this->Admin_model->eliminarRegistro($data);
-		if($query == TRUE) {
-			echo json_encode($query);
-			exit();
-		} else{
-			echo json_encode($query);
-			exit();
+		if($data['t_uno'] == 'portada'){		
+			$result['item'] = $this->Admin_model->getRegistro($data['id'], 'portada');
+			$query = $this->Admin_model->eliminarRegistro($data);
+			rename($result['item']->ruta, $result['item']->ruta.'_delete');
+	        rename($result['item']->miniatura, $result['item']->miniatura.'_delete');
 		}
-	}
-
-
-	function eliminarPortada(){
-		if ($this->input->is_ajax_request()) {
-			$id = $this->input->post('idPortada', TRUE);
-            $datos['file'] = $this->Admin_model->getRegistro($id, 'portada');
-            $accion = $this->borrarPortada($id);
-            if($accion == FALSE and empty($datos)){
-	            $datos['exito'] = "Incorrecto!!";
-            	$this->layout->view('error', $datos);
-	        }
-	        else{
-	           	rename($datos['file']->ruta, $datos['file']->ruta.'_delete');
-	           	rename($datos['file']->miniatura, $datos['file']->miniatura.'_delete');
-	        }
+		else {
+			$query = $this->Admin_model->eliminarRegistro($data);
 		}
-		else{
-			show_404();
-		}
+		$query = ($query == TRUE) ? TRUE : FALSE;
+		echo json_encode($query);
+		exit();
 	}
 
 	function eliminarSlide(){
@@ -750,100 +682,25 @@ class Admin extends CI_Controller{
 	function estatusRegistro(){
 		if ($this->input->is_ajax_request()) {
 			$id = $this->input->post('id', TRUE);
-			$datos = $this->Admin_model->getUsuario($id);
-			$estatus = ($datos->estatus == 1) ? 0 : 1;
-			$query = $this->Admin_model->cambiarStatus($id, $estatus, 'usuario');
-			if($query == TRUE) {
-				echo json_encode($query);
-				exit();
-			} else{
-				echo json_encode($query);
-				exit();
-        	}
+			$tabla = $this->input->post('tabla', TRUE);
+			$data = $this->Admin_model->getRegistro($id, $tabla);
+			$estatus = ($data->estatus == 1) ? 0 : 1;
+			$query = $this->Admin_model->actualizarEstatus($id, $estatus, $tabla);
+			$query = ($query == TRUE) ? TRUE : FALSE;
+			echo json_encode($query);
+			exit();
 		}
 		else{
 			show_404();
 		}
 	}
-
-	function estatusContenido(){
-		if ($this->input->is_ajax_request()) {
-			$id = $this->input->post('idCatalogo', TRUE);
-			$datos = $this->Admin_model->getContenido($id);
-			if($datos->estatus == 1){
-				$estatus = 0;
-			}
-			else{
-				$estatus = 1;
-			}
-			$this->Admin_Model->cambiarStatus($id, $estatus);
-		}
-		else{
-			show_404();
-		}
-	}
-
-	function estatusSlide(){
-		if ($this->input->is_ajax_request()) {
-			$id = $this->input->post('idSlides', TRUE);
-			$datos = $this->Admin_model->getRegistro($id, 'slides');
-			if($datos->estatus == 1){
-				$estatus = 0;
-			}
-			else{
-				$estatus = 1;
-			}
-			$this->Admin_Model->cambiarStatus($id, $estatus);
-		}
-		else{
-			show_404();
-		}
-    }
-
-    function estatusNoticia(){
-		if ($this->input->is_ajax_request()) {
-			$id = $this->input->post('idNoticias', TRUE);
-			$datos = $this->Admin_model->getRegistro($id, 'noticias');
-			if($datos->estatus == 1){
-				$estatus = 0;
-			}
-			else{
-				$estatus = 1;
-			}
-			$this->Admin_model->estatusNoticia($id, $estatus, 'noticias');
-		}
-		else{
-			show_404();
-		}
-    }
 
     //Listar Datos	
-	function listarAutor(){
+	function listarDatos(){
 		if ($this->input->is_ajax_request()) {
-			$autor = $this->Admin_model->mostrarAutores();
-			echo json_encode($autor);
-			exit();
-		}
-		else{
-			show_404();
-		}
-	}
-
-	function listarCategoria(){
-		if ($this->input->is_ajax_request()) {
-			$categoria = $this->Admin_model->listarDatos('categoria');
-			echo json_encode($categoria);
-			exit();
-		}
-		else{
-			show_404();
-		}
-	}
-
-    function listarPortada(){
-		if ($this->input->is_ajax_request()) {
-			$portada = $this->Admin_model->listarDatos('portada');
-			echo json_encode($portada);
+			$tabla = $this->input->post('tabla', TRUE);
+			$data = $this->Admin_model->listarDatos($tabla);
+			echo json_encode($data);
 			exit();
 		}
 		else{
@@ -890,7 +747,7 @@ class Admin extends CI_Controller{
 
 	function filtrarNoticias(){
 		if ($this->input->is_ajax_request()) {
-			$filtro = $this->input->post("filtro");
+			$filtro = $this->input->post('filtro');
 			$datos = $this->Admin_model->filtrarNoticias($filtro);
 			echo json_encode($datos);
 			exit();
@@ -923,50 +780,35 @@ class Admin extends CI_Controller{
     
     //Crear thumbnail
     function _crear_thumbnail($filename, $tipo){
+        $config['image_library'] = 'gd2';
+		$config['create_thumb'] = TRUE;
+		$config['maintain_ratio'] = TRUE;
+		$config['width'] = 150;
+		$config['height'] = 150;
         switch ($tipo) {
         	case '1':
-        		$config['image_library'] = 'gd2';
 		        //Ubica la imágen a redimensionar
 		        $config['source_image'] = 'uploads/slide/'.$filename;
-		        $config['create_thumb'] = TRUE;
-		        $config['maintain_ratio'] = TRUE;
 		        //Guardamos la miniatura
 		        $config['new_image'] = 'uploads/slide/thumbs/';
-		        $config['width'] = 150;
-		        $config['height'] = 150;
         		break;
         	case '2':
-        		$config['image_library'] = 'gd2';
 		        //Ubica la imágen a redimensionar
 		        $config['source_image'] = 'uploads/300x300/'.$filename;
-		        $config['create_thumb'] = TRUE;
-		        $config['maintain_ratio'] = TRUE;
 		        //Guardamos la miniatura
 		        $config['new_image'] = 'uploads/300x300/thumbs/';
-		        $config['width'] = 150;
-		        $config['height'] = 150;
         		break;
         	case '3':
-        		$config['image_library'] = 'gd2';
 		        //Ubica la imágen a redimensionar
 		        $config['source_image'] = 'uploads/1000x150/'.$filename;
-		        $config['create_thumb'] = TRUE;
-		        $config['maintain_ratio'] = TRUE;
 		        //Guardamos la miniatura
 		        $config['new_image'] = 'uploads/1000x150/thumbs/';
-		        $config['width'] = 150;
-		        $config['height'] = 150;
         		break;
             case '4':
-        		$config['image_library'] = 'gd2';
 		        //Ubica la imágen a redimensionar
 		        $config['source_image'] = 'uploads/cover/'.$filename;
-		        $config['create_thumb'] = TRUE;
-		        $config['maintain_ratio'] = TRUE;
 		        //Guardamos la miniatura
 		        $config['new_image'] = 'uploads/cover/thumbs/';
-		        $config['width'] = 150;
-		        $config['height'] = 150;
         		break;
         }
         $this->load->library('image_lib', $config); 
