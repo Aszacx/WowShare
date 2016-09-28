@@ -80,11 +80,12 @@ class Admin_Model extends CI_Model {
         return $query->result();
     }
 
-    function obtenerSlides($tipo, $inicio = FALSE, $cantidad = FALSE){
+    function obtenerSlides($buscar = NULL, $inicio = FALSE, $cantidad = FALSE){
+        $this->db->where('tipo', $buscar)->order_by('id', 'ASC');
         if ($inicio !== FALSE && $cantidad !== FALSE) {
             $this->db->limit($cantidad, $inicio);
         }
-        
+        $query = $this->db->get('slide');
         return $query->result();
     }
 

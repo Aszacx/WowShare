@@ -93,6 +93,7 @@ class Admin extends CI_Controller{
 						$data['metodo'] = 'obtenerPortadas';
 					break;
 					case 'slide':
+						$data['metodo'] = 'obtenerSlides';
 					break;
 				}
 				$this->gestionarRegistros($data);
@@ -116,26 +117,6 @@ class Admin extends CI_Controller{
 		echo json_encode($data);
 		exit();
 	}
-
-	function gestionarSlides(){
-		if ($this->input->is_ajax_request()) {
-			$tipo = $this->input->post('tipo', TRUE);
-			$num_pagina = $this->input->post('pagina_slide');
-            $cantidad = 5;
-            $inicio = ($num_pagina - 1) * $cantidad;
-            $data = array(
-            	'slides' => $this->Admin_model->mostrarSlides($tipo, $inicio, $cantidad),
-            	'total_registros' => count($this->Admin_model->mostrarSlides($buscar)),
-            	'cantidad' => $cantidad	
-            );
-			echo json_encode($data);
-			exit();
-		}
-		else{
-			show_404();
-		}
-	}
-
 
 	//Alta de Registros
 	function crearDatos(){
@@ -320,7 +301,7 @@ class Admin extends CI_Controller{
 	function createSlide() {  
     	if ($this->input->is_ajax_request()) {
             if($this->input->post()){
-                $tipo = $this->input->post('slides', TRUE);
+                $buscar = $this->input->post('slides', TRUE);
                 $this->load->library('upload');
                 $config = array(
 			        'allowed_types' => 'jpg|png',
@@ -366,7 +347,8 @@ class Admin extends CI_Controller{
                         'miniatura' => $thumbnail_path,
                         'estatus' => 0
 	                );
-	                $this->Admin_model->create($data_uno, $data_dos, $config);
+	                $data_dos = NULL;
+	                $this->guardarRegistros($data_uno, $data_dos, $config);
                 }
             }
         }
@@ -632,6 +614,7 @@ class Admin extends CI_Controller{
 				case 'autor':
 				case 'categoria':
 				case 'portada':
+				case 'slide':
 					$data['foreign_id'] = NULL;
 					$data['t_uno'] = $tabla;
 					$data['t_dos'] = NULL;
@@ -645,8 +628,8 @@ class Admin extends CI_Controller{
 	}
 
 	function eliminarRegistro($data){
-		if($data['t_uno'] == 'portada'){		
-			$result['item'] = $this->Admin_model->getRegistro($data['id'], 'portada');
+		if($data['t_uno'] == 'portada' || $data['t_uno'] == 'slide'){		
+			$result['item'] = $this->Admin_model->getRegistro($data['id'], $data['t_uno']);
 			$query = $this->Admin_model->eliminarRegistro($data);
 			rename($result['item']->ruta, $result['item']->ruta.'_delete');
 	        rename($result['item']->miniatura, $result['item']->miniatura.'_delete');
@@ -657,25 +640,6 @@ class Admin extends CI_Controller{
 		$query = ($query == TRUE) ? TRUE : FALSE;
 		echo json_encode($query);
 		exit();
-	}
-
-	function eliminarSlide(){
-		if ($this->input->is_ajax_request()) {
-			$id = $this->input->post('idSlides', TRUE);
-            $datos['file'] = $this->Admin_model->getRegistro($id, 'slides');
-            if(empty($datos)){
-	            $datos['exito'] = "Incorrecto!!";
-            	$this->layout->view('error', $datos);
-	        }
-	        else{
-	           	rename($datos['file']->ruta, $datos['file']->ruta.'_delete');
-	           	rename($datos['file']->miniatura, $datos['file']->miniatura.'_delete');
-            	$this->borrarSlide($id);
-	        }
-		}
-		else{
-			show_404();
-		}
 	}
 
 	//Cambiar Status a Registro 
@@ -756,27 +720,6 @@ class Admin extends CI_Controller{
 			show_404();
 		}
 	}
-    
- 	//Elimina imágenes
-    function borrarSlide($id){   
-        if(empty($id)){
-            return FALSE;
-        }
-        else{
-            $this->Admin_model->eliminarRegistro($id, 'slides');
-            return TRUE;
-        }
-    }
-
-    function borrarPortada($id){   
-        if(empty($id)){
-            return FALSE;
-        }
-        else{
-            $this->Admin_Model->eliminarRegistro($id, 'portada');
-            return TRUE;
-        }
-    }
     
     //Crear thumbnail
     function _crear_thumbnail($filename, $tipo){

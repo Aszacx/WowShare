@@ -4,9 +4,6 @@ $(document).ready(function() {
     listarDatos("autor");
     listarDatos("categoria");
     listarDatos("portada");
-    //gestionarSlides(1);
-    //gestionarSlides(2);
-    //gestionarSlides(3);
 
     //Lista los datos en modal respectivo
     gestionarUsuarios("", 1); 
@@ -15,7 +12,9 @@ $(document).ready(function() {
     gestionarCategorias("", 1);
     gestionarNoticias("", 1);
     gestionarPortadas("", 1);
-
+    gestionarSlides(1, 1);
+    gestionarSlides(2, 1);
+    gestionarSlides(3, 1);
 });
 
 function primeraMayus(string){
@@ -123,6 +122,11 @@ function eliminarRegistro(id, tabla){
                     break;
                     case "portada":
                         gestionarPortadas("", 1);
+                    break;
+                    case "slide":
+                        gestionarSlides(1, 1);
+                        gestionarSlides(2, 1);
+                        gestionarSlides(3, 1);
                     break;
                 }    
                 $("#msj-"+tabla+"").addClass("alert text-center alert-danger alert-accion").html("Registro eliminado.").show(100).delay(3500).hide(100);

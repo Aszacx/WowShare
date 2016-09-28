@@ -1,110 +1,93 @@
 //Gestión de Slides
     //Eliminar Slide
-    $("body").on("click",".slides #eliminarSlide",function(event){
-        idSlides = $(this).attr("value");
-        eliminarSlide(idSlides);
+    $("body").on("click",".slides #eliminar-slide",function(event){
+        id = $(this).attr("value");
+        tabla = "slide";
+        eliminarRegistro(id, tabla);
     });
     
     //Estatus de Slide
-    $("body").on("click",".slides #estatusSlide",function(event){
-        idSlides = $(this).attr("value");       
-        estatusSlide(idSlides); 
+    $("body").on("click",".slides #estatus-slide",function(event){
+        id = $(this).attr("value"); 
+        tabla = "slide";      
+        estatusRegistro(id, tabla); 
+    });
+
+    //Paginación
+    $("body").on("click","#paginacion-slides li a", function(e){
+        e.preventDefault();
+        valor = $(this).attr("href");
+        buscar = 1;
+        gestionarSlides(buscar, valor);
     });
     
 //Gestión de Slides
-function listarSlides(tipo){
+function gestionarSlides(buscar, pagina){
     $.ajax({
         type:"POST",
-        url:"admin/listarSlides",
+        url:"admin/leerDatos",
         cache: false,
-        data: "tipo="+tipo,
-        success: function(datos){
-            var slides = eval(datos);
+        data: {buscar_slide:buscar, pagina_slide:pagina, tabla: "slide"},
+        dataType: "JSON"
+    }).success( function(datos){
             html = "<table class='table table-bordered'><thead>";
             html += "<tr><th>Nombre</th><th>Slide</th><th>Acciones</th></tr>";
             html += "</thead><tbody>";
-            for (var i = 0; i < slides.length; i++) {
-                html += "<td>"+slides[i]["nombre"]+"</td><td><img src=../"+slides[i]["miniatura"]+"></td>";
-                html += "<td><button type='button' id='estatusSlide' title='Estatus' class='btn btn-xs' value="+slides[i]["idSlides"]+">"+slides[i]["estatus"]+"</button>"; 
-                html += " <button type='button' id='eliminarSlide' title='Eliminar' class='btn btn-danger btn-xs' value="+slides[i]["idSlides"]+"><i class='glyphicon glyphicon-trash'></i></button></td></tr>";
-            };
+            $.each(datos.registros, function (key, item){
+                html += "<td>"+item.nombre+"</td><td><img src=../"+item.miniatura+"></td>";
+                html += "<td><button type='button' id='estatus-slide' title='Estatus' class='btn btn-xs' value="+item.id+">"+item.estatus+"</button>"; 
+                html += " <button type='button' id='eliminar-slide' title='Eliminar' class='btn btn-danger btn-xs' value="+item.id+"><i class='glyphicon glyphicon-trash'></i></button></td></tr>";
+            });
             html +="</tbody></table>";
-            switch(tipo) {
+            switch(buscar) {
                 case 1:
-                    $("#tablaSlides").html(html);
-                    break;
+                    $("#tabla-slides").html(html);
+                    total_registros = datos.total_registros;
+                    cantidad = datos.cantidad;
+                    paginarRegistros(pagina, total_registros, cantidad);
+                    $("#paginacion-slides").html(paginador);
+                break;
                 case 2:
-                    $("#publicidad300x300").html(html);
-                    break;
+                    $("#publicidad-300x300").html(html);
+                    total_registros = datos.total_registros;
+                    cantidad = datos.cantidad;
+                    paginarRegistros(pagina, total_registros, cantidad);
+                    $("#paginacion-publi-uno").html(paginador);
+                break;
                 case 3:
-                    $("#publicidad1000x150").html(html);
+                    $("#publicidad-1000x150").html(html);
+                    total_registros = datos.total_registros;
+                    cantidad = datos.cantidad;
+                    paginarRegistros(pagina, total_registros, cantidad);
+                    $("#paginacion-publi-dos").html(paginador);
+                break;
             }
-        }
     });
 }
 
 function agregarSlide(){
-    var formData = new FormData($("#formSlide")[0]);
+    var formData = new FormData($("#form-slide")[0]);
     //var seleccion = $("#slides").val();
     //formData.append(seleccion);
     $.ajax({
         type: "POST",
-        url: "admin/guardarSlide",
+        url: "admin/createSlide",
         data: formData,
         cache: false,
         contentType: false,
         processData: false,
-        success: function(){
-            $("#formSlide")[0].reset();
-            listarSlides(1);
-            listarSlides(2);
-            listarSlides(3);
-            $(".msjSlide").addClass("mensaje").html("Imágen subida correctamente.").show(200).delay(2500).hide(200);
-        },
-        error: function(){
-            $(".msjSlide").addClass("mensaje").html("Error al subir imágen.").show(200).delay(2500).hide(200);
+        dataType: "JSON"
+    }).success( function(response){
+        $(".msj-slide").removeClass();
+        if(response === true) {
+            $("#form-slide")[0].reset();
+            gestionarSlides(1, 1);
+            gestionarSlides(2, 1);
+            gestionarSlides(3, 1);
+            $("#msj-slide").addClass("alert text-center alert-success alert-accion").html("Imágen subida correctamente.").show(100).delay(3500).hide(100);
+        }
+        else{
+            $("#msj-slide").addClass("alert text-center alert-danger alert-accion").html("Error al subir imágen.").show(100).delay(3500).hide(100);
         }
     });
-}
-
-function eliminarSlide(id){
-    var pregunta = confirm("¿Esta seguro de eliminar?");
-    if(pregunta == true){
-        $.ajax({
-            type:"POST",
-            url: "admin/eliminarSlide",
-            cache: false,
-            data: "idSlides= "+id,
-            success: function(){
-                listarSlides(1);
-                listarSlides(2);
-                listarSlides(3);
-                $(".msjSlide").addClass("mensaje").html("Slide eliminado correctamente.").show(200).delay(2500).hide(200);
-            },
-            error: function(){
-                $(".msjSlide").addClass("mensaje").html("No se puede eliminar slide.").show(200).delay(2500).hide(200);
-            }
-        });
-    }
-}
-
-function estatusSlide(id){
-    var pregunta = confirm("¿Seguro de cambiar estatus de esta imágen?");
-    if(pregunta == true){
-        $.ajax({
-            type: "POST",
-            url: "admin/estatusSlide",
-            cache: false,
-            data: "idSlides= "+id,
-            success: function(){
-                listarSlides(1);
-                listarSlides(2);
-                listarSlides(3);
-                $(".msjSlide").addClass("mensaje").html("Actualización con exito.").show(200).delay(2500).hide(200);
-            },
-            error: function(){
-                $(".msjSlide").addClass("mensaje").html("Error al cambiar estatus.").show(200).delay(2500).hide(200);
-            }
-        });
-    }
 }
