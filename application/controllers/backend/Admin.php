@@ -366,9 +366,11 @@ class Admin extends CI_Controller{
 				break;
 			}
 			$query = $this->Admin_model->getUsuario($id);
-			for ($i = 0; $i < count($query); $i++) { 
-				echo $i
-			}
+			print_r(array_keys($query));
+			echo $query[1];
+			/*for ($i = 0; $i <= count($query) ; $i++) { 
+				echo $query[$i];
+			}*/
 			/*$datos = array(
                 0 => $query->tipo,
                 1 => $query->idMembresia,

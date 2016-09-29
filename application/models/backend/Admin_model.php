@@ -135,7 +135,7 @@ class Admin_Model extends CI_Model {
         ->join('membresia as m', 'm.id = c.membresia_id')
         ->where('u.id', $id)
         ->get();                       
-        return $query->row();
+        return $query->row_array();
     }
     
     function getContenido($id){
