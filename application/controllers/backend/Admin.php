@@ -133,7 +133,6 @@ class Admin extends CI_Controller{
 		                $tipo =  $this->input->post('tipo', TRUE);
 		                $membresia = $this->input->post('membresia', TRUE);
 		                $data_uno = array(
-		                    'id' => $this->input->post('idUsuario', TRUE),
 		                    'tipo' => $this->input->post('tipo', TRUE),
 		                    'nombre' => $this->input->post('nombre', TRUE),
 		                    'apellido' => $this->input->post('apellido', TRUE),
@@ -360,7 +359,7 @@ class Admin extends CI_Controller{
 	//Obtener Datos de Registo a Actualizar
 	function editarUsuario(){
 		if ($this->input->is_ajax_request()) {
-			$id = $this->input->post('idUsuario');
+			$id = $this->input->post('idUsuario', TRUE);
 			$query = $this->Admin_model->getUsuario($id);
 			$datos = array(
                 0 => $query->tipo,
