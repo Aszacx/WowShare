@@ -231,19 +231,19 @@ function gestionarUsuarios(buscar, pagina){
     });
 }
 
-function editarUsuario(id){
+function editarUsuario(id, tabla){
     $.ajax({
         type: "POST",
-        url: "admin/editarUsuario",
+        url: "admin/editarRegistro",
         cache: false,
-        data: {idUsuario:id},
+        data: {id:id, tabla:tabla},
         success: function(datos){
             var datos = eval(datos);
             $("#form-usuario")[0].reset();
             $("#title-usuario").text("Editar Usuario");
             $("#form-usuario").attr("action", "admin/actualizarUsuario");
             $("#btn-usuario").addClass("btn-warning").val("Editar");
-            $("#idUsuario").val(idUsuario);
+            $("#idUsuario").val(id);
             if(datos[0] == 3){
                 //$("#rol").val(datos[0]).text("Cliente");
                 $("#tipo-usuario").val(datos[0]).attr("selected", true); 

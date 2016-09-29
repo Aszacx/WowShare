@@ -357,6 +357,35 @@ class Admin extends CI_Controller{
     }
 
 	//Obtener Datos de Registo a Actualizar
+	function editarRegistro(){
+		if ($this->input->is_ajax_request()) {
+			$tabla = $this->input->post('tabla', TRUE);
+			switch ($tabla) {
+				case 'usuario':
+					$id = $this->input->post('id', TRUE);
+				break;
+			}
+			$query = $this->Admin_model->getUsuario($id);
+			for ($i = 0; $i < count($query); $i++) { 
+				echo $i
+			}
+			/*$datos = array(
+                0 => $query->tipo,
+                1 => $query->idMembresia,
+            	2 => $query->nombre,
+            	3 => $query->apellido,
+                4 => $query->idPais,
+				5 => $query->email,
+                6 => $query->contrasena
+			);
+			echo json_encode($datos);*/
+			exit();
+		}
+		else{
+			show_404();
+		}
+	}
+
 	function editarUsuario(){
 		if ($this->input->is_ajax_request()) {
 			$id = $this->input->post('idUsuario', TRUE);
