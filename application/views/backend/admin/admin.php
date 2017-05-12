@@ -108,14 +108,24 @@
                         </div>
                         <hr />
                         <div class="row">
-                            <div class="col col-md-8">
-                                <div id="msj-noticia">
-                            </div>  
+                            <div class="col col-md-4">
+                                <div class="input-group">
+                                    <label class="input-group-addon"><i class="fa fa-filter"></i></label>
+                                    <select name="filtrar" class="form-control" id="filtrar">
+                                        <option value="0">Todos</option>
+                                        <option value="Guias">Guías</option>
+                                        <option value="Noticia">Noticias</option>
+                                        <option value="Tutorial">Tutoriales</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col col-md-4">
+                                <div id="msj-noticias"></div>  
                             </div>
                             <div class="col col-md-4">
                                 <div class="right-inner-addon">
                                     <i class="fa fa-search"></i>                   
-                                    <input type="text" id="buscar-noticia" class="form-control" placeholder="Buscar Noticias/Guías">
+                                    <input type="text" id="buscar-noticias" class="form-control" placeholder="Buscar Noticias/Guías">
                                 </div>
                             </div>
                         </div>
@@ -126,33 +136,26 @@
                     <!--Gestión de Slide-->
                     <div role="tabpanel" class="tab-pane" id="slide">
                         <div class="row">
-                            <h3 class="text-left">Gestión de Slides</h3>
-                            <div id="msj-slide"></div>
-                            <br>
-                            <form class="form-inline" enctype="multipart/form-data" id="form-slide" onsubmit="return false">
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <label class="input-group-addon">Tipo:</label>
-                                        <select name="slides" id="slides" class="form-control">
-                                            <option value="">Selecciona Tipo</option>
-                                            <option value="1">Slide Principal 600x300</option>
-                                            <option value="2">Publicidad 300x300</option>
-                                            <option value="3">Publicidad 1000x150</option>
-                                        </select>
-                                    </div>
+                            <div class="col col-md-6">  
+                                <h3>Gestión de Slides</h3>
+                            </div>
+                            <div class="col col-md-6 text-right">
+                                <br />
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-success btn-sm" id="nuevo-slide" title="Agregar Slide"><i class="fa fa-plus-square fa-2x"></i></button>
                                 </div>
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <label class="input-group-addon"><i class="glyphicon glyphicon-picture"></i></label>
-                                        <input type="file" name="ruta" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="form-group text-right"> 
-                                    <input type="submit" class="btn btn-success" id="btn-slide" value="Guardar" onclick="agregarSlide()">
-                                </div>
-                            </form>
+                                <br />
+                            </div>                                                         
                         </div>
-                        <hr>  
+                        <hr>
+                        <div class="row">
+                            <div class="col col-md-4"></div>
+                            <div class="col col-md-4">
+                                <div id="msj-slide"></div>  
+                            </div>
+                            <div class="col col-md-4"></div>
+                        </div>  
+                        <hr>
                         <div class="row">
                             <div class="col col-md-2"></div>
                             <div class="col col-md-8">

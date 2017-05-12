@@ -16,10 +16,8 @@
 	font-weight: bold;
 }
 .carousel-control.left, .carousel-control.right{
-	height: 50px;
-	border-radius: 30%;
 	margin: auto 0;
-	width: 50px;
+	width: 4%;
 }
 .carousel-control{
 	background: #6E6E6E;

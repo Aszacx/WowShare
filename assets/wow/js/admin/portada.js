@@ -55,7 +55,6 @@
         $.ajax({
             url: $form.attr("action"),
             type: "POST",
-            //data: $form.serialize(),
             data: formData,
             cache: false,
             contentType: false,

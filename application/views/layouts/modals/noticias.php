@@ -1,10 +1,10 @@
 <!--Modal Noticias-->
-<div class="modal fade" id="modal-noticia" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+<div class="modal fade" id="modal-noticias" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="title-noticia"></h4>
+                <h4 class="modal-title" id="title-noticias"></h4>
                 <script type="text/javascript">
                     tinymce.init({
                         language : "es_MX",
@@ -24,7 +24,7 @@
                 </script>
             </div>
             <div class="modal-body">
-                <form role="form" id="form-noticia" onsubmit="return false">
+                <form role="form" id="form-noticias" onsubmit="return false">
                     <input type="hidden" id="idNoticias" name="idNoticias" value="">
                     <div class="form-group">
                         <div class="input-group">
@@ -57,7 +57,7 @@
                     </div>
                     <div class="modal-footer">
                         <div class="form-group text-right">
-                            <input type="submit" class="btn" id="btn-noticia">
+                            <input type="submit" class="btn" id="btn-noticias">
                         </div>
                     </div>
                 </form>

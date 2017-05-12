@@ -2,6 +2,7 @@
     //Abrir modal de Agregar Usuario
      $("body").on("click", "#nuevo-usuario", function(){
         $("#title-usuario").text("Nuevo Usuario");
+        $("#idUsuario").val("");
         $("#btnUsuario").removeClass('btn-warning');
         $("#btn-usuario").addClass('btn-success').val("Guardar");
         $("#form-usuario")[0].reset();
@@ -91,7 +92,7 @@
                     },
                     blank: {}
                 }
-            },
+            }
         }
     })
     .on("success.form.fv", function(e) {
@@ -109,6 +110,7 @@
             data: $.param(extraData),
             dataType: "JSON"
         }).success( function(response) {
+            $("#msj-usuario").removeClass();
             if(response === true && $("#btn-usuario").val() == "Guardar") {
                 $("#form-usuario")[0].reset();
                 $("#modal-usuario").modal("hide");
@@ -119,29 +121,10 @@
                 $("#form-usuario")[0].reset();
                 $("#modal-usuario").modal("hide");
                 gestionarUsuarios("", 1);
-                $("#msj-usuario").aaddClass("alert text-center alert-warning alert-accion").html("Usuario editado.").show(100).delay(3500).hide(100);
+                $("#msj-usuario").addClass("alert text-center alert-warning alert-accion").html("Usuario editado.").show(100).delay(3500).hide(100);
             } else {
                 $("#msj-usuario").addClass("alert text-center alert-danger alert-accion").html("Error al registrar.").show(100).delay(3500).hide(100);
             }
-        });
-    }); 
-    
-    //Abrir modal de Gestion de Códigos
-    $("#gestion-codigos").on("click",function(){
-        $(".modal-title").text("Gestión de Códigos");
-        $("#gestionar-codigos").modal({
-            show:true,
-            backdrop:"static"
-        });
-    });
-    
-    //Abrir modal de Generar Códigos
-    $("#generar-codigo").on("click",function(){
-        $("#form-codigo")[0].reset();
-        $("$title-codigo").text("Generar Códigos");
-        $("#modal-codigo").modal({
-            show:true,
-            backdrop:"static"
         });
     });
     
@@ -162,7 +145,7 @@
         event.preventDefault(); 
         id = $(this).attr("href");
         tabla = "usuario";       
-        editarUsuario(id, tabla);
+        editarRegistro(id, tabla);
     });
     
     //Estatus de Usuario
@@ -171,7 +154,6 @@
         tabla = "usuario";
         estatusRegistro(id, tabla); 
     });
-
     
     //Eliminar Usuario
     $("body").on("click","#tabla-usuarios #eliminar-usuario", function(event) {
@@ -228,55 +210,5 @@ function gestionarUsuarios(buscar, pagina){
             cantidad = datos.cantidad;
             paginarRegistros(pagina, total_registros, cantidad);
             $("#paginacion-usuario").html(paginador);
-    });
-}
-
-function editarUsuario(id, tabla){
-    $.ajax({
-        type: "POST",
-        url: "admin/editarRegistro",
-        cache: false,
-        data: {id:id, tabla:tabla},
-        success: function(datos){
-            var datos = eval(datos);
-            $("#form-usuario")[0].reset();
-            $("#title-usuario").text("Editar Usuario");
-            $("#form-usuario").attr("action", "admin/actualizarUsuario");
-            $("#btn-usuario").addClass("btn-warning").val("Editar");
-            $("#idUsuario").val(id);
-            if(datos[0] == 3){
-                //$("#rol").val(datos[0]).text("Cliente");
-                $("#tipo-usuario").val(datos[0]).attr("selected", true); 
-                $("#tipo-membresia").show();
-            }
-            else{
-                $("#tipo-membresia").hide();
-            }
-            $("#membresia").val(datos[1]).attr("selected", true); 
-            $("#nombre").val(datos[2]);
-            $("#apellido").val(datos[3]);
-            $("#pais").val(datos[4]).attr("selected", true);
-            $("#email").val(datos[5]);
-            $("#pass").val(datos[6]);
-            $("#modal-usuario").modal({
-                show:true,
-                backdrop:"static"
-            });
-        }
-    });
-}
-
-//Generar códigos
-function generarCodigos(){
-    $.ajax({
-        type:"POST",
-        url:"admin/generarCodigos",
-        cache: false,
-        data:$("#formCodigo").serialize(),
-        success: function(){
-            $("#form-codigo")[0].reset();
-            $("#modal-codigo").modal("hide");
-            $("#msj-codigo").addClass("mensaje").html("Códigos generados correctamente.").show(200).delay(2500).hide(200);
-        }
     });
 }

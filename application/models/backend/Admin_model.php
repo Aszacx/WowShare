@@ -35,6 +35,20 @@ class Admin_Model extends CI_Model {
         return $query->result();
     }
 
+    function obtenerCodigos($buscar = NULL, $inicio = FALSE, $cantidad = FALSE){
+        if ($inicio !== FALSE && $cantidad !== FALSE) {
+            $this->db->limit($cantidad, $inicio);
+        }
+        $query = $this->db
+        ->select('id, codigo, email, estatus')
+        ->from('codigos')
+        ->like('codigo', $buscar)
+        ->or_like('email', $buscar)
+        ->order_by('estatus', 'ASC')
+        ->get();                       
+        return $query->result();
+    }
+
     function obtenerContenidos($buscar = NULL, $inicio = FALSE, $cantidad = FALSE){
         if ($inicio !== FALSE && $cantidad !== FALSE) {
             $this->db->limit($cantidad, $inicio);
@@ -48,6 +62,7 @@ class Admin_Model extends CI_Model {
         ->like('c.titulo', $buscar)
         ->or_like('a.autor', $buscar)
         ->or_like('cat.categoria', $buscar)
+        ->or_like('tc.tipo', $buscar)
         ->order_by('c.id', 'ASC')
         ->get();                   
         return $query->result();
@@ -96,7 +111,7 @@ class Admin_Model extends CI_Model {
         $query = $this->db
         ->select('n.id, n.titulo, n.fecha, n.estatus, tn.tipo')
         ->from('noticias as n')
-        ->join('tipo_noticia as tn','tn.id = n.tipo_noticia_id','LEFT')
+        ->join('tipo_noticia as tn','tn.id = n.tipo_noticia_id', 'LEFT')
         ->like('n.titulo', $buscar)
         ->or_like('tn.tipo', $buscar)
         ->order_by('n.id', 'DESC')
@@ -125,27 +140,43 @@ class Admin_Model extends CI_Model {
     }
     //Fin guardar Datos
 
+    //Actualizar Datos
+    function actualizar($data_uno = FALSE, $data_dos = FALSE, $config = array()){
+        if($data_uno == TRUE && $data_dos == TRUE && $config == TRUE){
+            $this->db->where('id', $config['id']);
+            $this->db->update($config['t_uno'], $data_uno);
+            if($this->db->affected_rows() > 0) {
+                $this->db->where($config['foreign_id'], $config['id']);
+                $this->db->update($config['t_dos'], $data_dos);
+            }
+            return TRUE;
+        }
+        else if($data_uno == TRUE && $data_dos == FALSE && $config == TRUE){
+            $this->db->where('id', $config['id']);
+            $this->db->update($config['tabla'], $data_uno);
+            if($this->db->affected_rows() > 0){
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+
     //Editar Datos
     function getUsuario($id){
         $query = $this->db
-        ->select('u.tipo, u.nombre, u.apellido, u.email, u.estatus, p.id, m.id, u.contrasena')
+        ->select('u.tipo, c.membresia_id, u.nombre, u.apellido, c.pais_id, u.email, u.contrasena, u.estatus')
         ->from('usuario as u')
         ->join('cliente as c','u.id = c.usuario_id','LEFT')
-        ->join('pais as p', 'p.id = c.pais_id')
-        ->join('membresia as m', 'm.id = c.membresia_id')
         ->where('u.id', $id)
         ->get();                       
-        return $query->row_array();
+        return $query->row();
     }
     
     function getContenido($id){
         $query = $this->db
-        ->select('c.titulo, c.estatus, a.id, cat.id, tc.anio, tc.enlace, tc.tipo, p.id')
+        ->select('tc.tipo, c.titulo, c.autor_id, c.categoria_id, c.portada_id, tc.anio, tc.enlace, c.estatus')
         ->from('contenido as c')
         ->join('tipo_contenido as tc', 'c.id = tc.contenido_id', 'LEFT')
-        ->join('autor as a', 'c.autor_id = a.id', 'LEFT')
-        ->join('categoria as cat', 'c.categoria_id = cat.id', 'LEFT')
-        ->join('portada as p', 'c.portada_id = p.id', 'LEFT')
         ->where('c.id', $id)
         ->get();                       
         return $query->row();
@@ -153,58 +184,22 @@ class Admin_Model extends CI_Model {
 
     //Obtener datos para llenar formulario de editar
     function getRegistro($id, $tabla) {
-        $query = $this->db
-        ->from($tabla)
-        ->where('id', $id)
-        ->get();                       
+        if($tabla == 'slide' || $tabla == 'noticias') {
+            $query = $this->db
+            ->from($tabla)
+            ->where('id', $id)
+            ->get();                       
+        }
+        else {
+            $query = $this->db
+            ->select(''.$tabla.'')
+            ->from($tabla)
+            ->where('id', $id)
+            ->get(); 
+        }
         return $query->row();
-        //autor, categoria, slide, noticia
     }
-
     //Fin editar Datos
-
-    //Actualizar Datos
-    function actualizarUsuario($datos, $data){
-        $this->db->where('id', $datos['id']);
-        $this->db->update('usuario', $datos);
-        $data2 = array(
-            'pais_id' => $data['pais'],
-            'membresia_id' => $data['membresia']
-        );
-        $this->db->where('usuario_id', $datos['id']);
-        $this->db->update('cliente', $data2);
-    }
-
-    function actualizarContenido($datos, $data){
-        $this->db->where('id', $datos['id']);
-        $this->db->update('contenido', $datos);
-         
-        if($this->db->affected_rows() > 0) {
-            $dato = array(
-                'tipo' => $data['tipo'],
-                'enlace' => $data['enlace'],
-                'anio' => $data['anio'],
-            );
-            $this->db->where('contenido_id', $datos['id']);
-            $this->db->update('tipo_contenido', $dato);
-            return TRUE;
-        } else {
-            return FALSE;
-        }
-    }
-
-    function actualizarRegistro($datos, $tabla){
-        $this->db->where('id', $datos['id']);
-        $this->db->update($tabla, $datos);
-        if($this->db->affected_rows() > 0) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
-        //Autor, categoria
-    }
-
-    //Fin actualizar Datos
 
     //Eliminar Datos
     function eliminarRegistro($data){
@@ -232,25 +227,8 @@ class Admin_Model extends CI_Model {
         } else {
             return FALSE;
         }
-        //usuario, contenido, slides, noticias
     }
-
     //Fin estatus Datos
-
-    //Filtrar Datos
-    function filtrarContenido($filtro){
-         $query = $this->db
-        ->select('c.id, c.titulo, a.autor, c.categoria, tc.anio, tc.enlace, tc.tipo, c.estatus')
-        ->from('contenido as c')
-        ->join('tipo_contenido as tc', 'c.id = tc.catalogo_id', 'LEFT')
-        ->join('autor as a', 'c.autor_id = a.id', 'LEFT')
-        ->join('categoria as cat', 'c.categoria_id = cat.id', 'LEFT')
-        ->like('tc.tipo', $filtro)
-        ->order_by('c.id', 'ASC')      
-        ->get();                       
-        return $query->result();
-    }
-    //Fin filtrar Datos
 
     //Listar en campo select formulario Datos
     function listarDatos($tabla){
@@ -259,8 +237,6 @@ class Admin_Model extends CI_Model {
         ->order_by("id", "ASC")
         ->get();
         return $query->result();
-        //pais, membresia, autor, categoria, tipo_noticias
     }
-
     //Fin listar en formulario Datos
 }

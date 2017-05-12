@@ -25,8 +25,9 @@
     //Editar Categoria
     $("body").on("click","#tabla-categorias a",function(event) {
         event.preventDefault(); 
-        idCategoria = $(this).attr("href");       
-        editarCategoria(idCategoria); 
+        id = $(this).attr("href");
+        tabla = "categoria";       
+        editarRegistro(id, tabla); 
     });
 
     $("#form-categoria").formValidation({
@@ -144,27 +145,5 @@ function gestionarCategorias(buscar, pagina){
         cantidad = datos.cantidad;
         paginarRegistros(pagina, total_registros, cantidad);
         $("#paginacion-categorias").html(paginador);
-    });
-}
-
-function editarCategoria(id){
-    $.ajax({
-        type: "POST",
-        url: "admin/editarCategoria",
-        cache: false,
-        data: {idCategoria:id},
-        success: function(datos){
-            var datos = eval(datos);
-            $("#form-categoria")[0].reset();
-            $("#form-categoria").attr("action", "admin/actualizarCategoria");
-            $("#title-categoria").text("Editar Categoria");
-            $("#btn-categoria").addClass("btn-warning").val("Editar");
-            $("#idCategoria").val(idCategoria);
-            $("#edit-categoria").val(datos[0]);
-            $("#modal-categoria").modal({
-                show:true,
-                backdrop:"static"
-            });
-        }
     });
 }

@@ -1,5 +1,5 @@
 <!--Modal Agregar Códigos-->
-<div class="modal fade" id="modal-codigo" tabindex="-1" role="dialog" aria-labelledby="ModalLabel">
+<div class="modal fade" id="modal-codigos" tabindex="-1" role="dialog" aria-labelledby="ModalLabel">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -7,7 +7,7 @@
                 <h4 class="modal-title" id="title-codigo"></h4>
             </div>
             <div class="modal-body">
-                <form role="form" id="form-codigo" onsubmit="return false">
+                <form role="form" id="form-codigos" onsubmit="return false">
                     <div class="radio">
                         <label>
                           <input type="radio" name="cantidad" id="" value="1" checked>
@@ -28,7 +28,7 @@
                     </div>
                     <div class="modal-footer">
                         <div class="form-group text-right">
-                            <input type="submit" class="btn" id="btn-codigo">
+                            <input type="submit" class="btn" id="btn-codigos">
                         </div>
                     </div>
                 </form>

@@ -1,4 +1,80 @@
 //Gestión de Slides
+
+    //Abrir modal de Agregar Slide
+    $("body").on("click", "#nuevo-slide", function(){
+        $("#title-slide").text("Nuevo Slide");
+        $("#btn-slide").removeClass('btn-warning');
+        $("#btn-slide").addClass('btn-success').val("Guardar");
+        //$("#form-slide")[0].reset();
+        $("#form-slide").attr("action", "admin/createSlide");
+        $("#modal-slide").modal({
+            show:true,
+            backdrop:"static"
+        });
+    });
+
+    $("#form-slide").formValidation({
+        framework: "bootstrap",
+        container: 'tooltip',
+        icon: {
+            valid: "glyphicon",
+            invalid: "glyphicon",
+            validating: "glyphicon glyphicon-refresh"
+        },
+        fields: {
+            slides:{
+                validators: {
+                    notEmpty: {
+                        message: 'Selecciona un tipo.'
+                    }
+                }
+            },
+            ruta: {
+                validators: {
+                    notEmpty: {
+                        message: 'Selecciona una imágen.'
+                    },
+                    file: {
+                        extension: 'png',
+                        //type: 'application/pdf',
+                        //maxSize: 2 * 1024 * 1024,
+                        message: 'El archivo adjunto no es png'
+                    }
+                }
+            }
+        }
+    })
+    .on("success.form.fv", function(e) {
+        e.preventDefault();
+
+        var $form = $(e.target),
+            fv    = $form.data("formValidation");
+        var formData = new FormData($("#form-slide")[0]);        
+
+        $.ajax({
+            url: $form.attr("action"),
+            type: "POST",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            dataType: "JSON"
+        }).success( function(response) {
+            $("#msj-slide").removeClass();
+            if(response === true && $("#btn-slide").val() == "Guardar") {
+                $("#form-slide")[0].reset();
+                $("#modal-slide").modal("hide");
+                gestionarSlides(1, 1);
+                gestionarSlides(2, 1);
+                gestionarSlides(3, 1);
+                $("#msj-slide").addClass("alert text-center alert-success alert-accion").html("Imágen subida correctamente.").show(100).delay(3500).hide(100);
+            }
+            else {
+                $("#msj-slide").addClass("alert text-center alert-danger alert-accion").html("Error al registrar.").show(100).delay(3500).hide(100);
+            }
+        });
+    });
+
     //Eliminar Slide
     $("body").on("click",".slides #eliminar-slide",function(event){
         id = $(this).attr("value");
@@ -62,32 +138,5 @@ function gestionarSlides(buscar, pagina){
                     $("#paginacion-publi-dos").html(paginador);
                 break;
             }
-    });
-}
-
-function agregarSlide(){
-    var formData = new FormData($("#form-slide")[0]);
-    //var seleccion = $("#slides").val();
-    //formData.append(seleccion);
-    $.ajax({
-        type: "POST",
-        url: "admin/createSlide",
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        dataType: "JSON"
-    }).success( function(response){
-        $(".msj-slide").removeClass();
-        if(response === true) {
-            $("#form-slide")[0].reset();
-            gestionarSlides(1, 1);
-            gestionarSlides(2, 1);
-            gestionarSlides(3, 1);
-            $("#msj-slide").addClass("alert text-center alert-success alert-accion").html("Imágen subida correctamente.").show(100).delay(3500).hide(100);
-        }
-        else{
-            $("#msj-slide").addClass("alert text-center alert-danger alert-accion").html("Error al subir imágen.").show(100).delay(3500).hide(100);
-        }
     });
 }

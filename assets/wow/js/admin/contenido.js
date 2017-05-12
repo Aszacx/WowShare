@@ -15,8 +15,9 @@
     //Editar Contenido
     $("body").on("click","#tabla-contenido a",function(event){
         event.preventDefault(); 
-        idContenido = $(this).attr("href");       
-        editarContenido(idContenido); 
+        id = $(this).attr("href");
+        tabla = "contenido";       
+        editarRegistro(id, tabla); 
     });
 
     $("#form-contenido").formValidation({
@@ -107,19 +108,20 @@
             data: $.param(extraData),
             dataType: "JSON"
         }).success( function(response) {
+            $("#msj-contenido").removeClass();
             if(response === true && $("#btn-contenido").val() == "Guardar") {
                 $("#form-contenido")[0].reset();
                 $("#modal-contenido").modal("hide");
                 gestionarContenido("", 1);
-                $("#msj-contenido").addClass("alert-success").html("Contenido registrado.").show(100).delay(3500).hide(100);
+                $("#msj-contenido").addClass("alert text-center alert-success alert-accion").html("Contenido registrado.").show(100).delay(3500).hide(100);
             }
             else if(response === true && $("#btn-contenido").val() == "Editar") {
                 $("#form-contenido")[0].reset();
                 $("#modal-contenido").modal("hide");
                 gestionarContenido("", 1);
-                $("#msj-contenido").addClass("alert-warning").html("Contenido editado.").show(100).delay(3500).hide(100);
+                $("#msj-contenido").addClass("alert text-center alert-warning alert-accion").html("Contenido editado.").show(100).delay(3500).hide(100);
             } else {
-                $("#msj-contenido").addClass("alert-danger").html("Error al registrar.").show(100).delay(3500).hide(100);
+                $("#msj-contenido").addClass("alert text-center alert-danger alert-accion").html("Error al registrar.").show(100).delay(3500).hide(100);
             }
         });
     });
@@ -194,76 +196,17 @@ function gestionarContenido(buscar, pagina){
     });
 }
 
-function filtrarContenido(filtro){
-    $.ajax({
-        type:"POST",
-        url:"admin/filtrarContenido",
-        cache: false,
-        data:{filtro:filtro},
-        success: function(datos){
-            html = "<table class='table table-bordered'><thead>";
-            html += "<tr><th>#ID</th><th>Titulo</th><th>Autor</th><th>Categoria</th><th>Año</th>";
-            html += "<th>Acciones</th></tr>";
-            html += "</thead><tbody>";
-            $.each(datos.registros, function (key, item){
-                html += "<tr><td>"+id+"</td><td>"+titulo+"</td><td>"+autor+"</td>";
-                html += "<td>"+categoria+"</td><td>"+anio+"</td>";
-                html += "<td><button type='button' id='estatus-contenido' title='Estatus' class='btn btn-xs' value="+id+">"+estatus+"</button>"; 
-                html += " <a href="+id+" title='Editar' class='btn btn-primary btn-xs'><i class='glyphicon glyphicon-pencil'></i></a>"; 
-                html += " <button type='button' id='eliminar-contenido' title='Eliminar' class='btn btn-danger btn-xs' value="+id+"><i class='glyphicon glyphicon-trash'></i></button></td></tr>";
-            });
-            html +="</tbody></table>";
-            $("#tabla-contenido").html(html);
-        }
-    });
-}
-
 //Filtrar Contenido por tipo
 function filtroContenido() {
-    var filtro = $("#filtro").val();
-    if (filtro == 0){
+    var buscar = $("#filtro").val();
+    if (buscar == 0){
         gestionarContenido("", 1); 
     }
     else{
-        filtrarContenido(filtro);
+        //filtrarContenido(filtro);
         $("#buscar-contenido").val("");
+        gestionarContenido(buscar, 1);
     }
 }
 $("#filtro").change(filtroContenido);
 filtroContenido();
-
-function editarContenido(id){
-    $.ajax({
-        type:"POST",
-        url:"admin/editarContenido",
-        cache: false,
-        data:{idContenido:id},
-        success: function(datos){
-            var datos = eval(datos);
-            $("#form-contenido")[0].reset();
-            $("#title-contenido").text("Editar Contenido");
-            $("#form-contenido").attr("action", "admin/actualizarContenido");
-            $("#btn-contenido").addClass("btn-warning").val("Editar");
-            $("#idContenido").val(idContenido);
-            $("#tipo-contenido").val(datos[0]).attr("selected", true);
-            if(datos[0] == 4){
-                $("#portada").show();
-            }
-            else{
-                $("#portada").hide();
-            }
-            $("#titulo").val(datos[1]);
-            $("#autor").val(datos[2]).attr("selected", true);
-            $("#categoria").val(datos[3]).attr("selected", true);
-            $("#cover").val(datos[4]).attr("selected", true);
-            $("#anio").val(datos[5]);
-            $("#enlace").val(datos[6]);
-            //$(tinymce.get('descrip').getBody()).html(datos[7]);
-            //tinymce.triggerSave();
-            $("#modalContenido").modal({
-                show:true,
-                backdrop:"static"
-            });
-        }
-    });
-}

@@ -54,6 +54,7 @@
             $this->load->view('layouts/modals/portada.php');
             $this->load->view('layouts/modals/gestion_codigos.php');
             $this->load->view('layouts/modals/codigo.php');
+            $this->load->view('layouts/modals/slide.php');
         
         ?>  
     </section>
@@ -77,6 +78,7 @@
     <script type="text/javascript" src="<?= base_url('assets/wow/js/admin/portada.js'); ?>"></script>
     <script type="text/javascript" src="<?= base_url('assets/wow/js/admin/slide.js'); ?>"></script>
     <script type="text/javascript" src="<?= base_url('assets/wow/js/admin/usuario.js'); ?>"></script>
+    <script type="text/javascript" src="<?= base_url('assets/wow/js/admin/codigos.js'); ?>"></script>
 </body>
 </html>
 

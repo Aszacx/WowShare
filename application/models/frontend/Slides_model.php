@@ -6,10 +6,10 @@ class Slides_Model extends CI_Model {
         parent::__construct();
     }
 
-    function getSlides(){
+    function getSlides($tipo = NULL){
         $query = $this->db
-        ->from('slides')
-        ->where('estatus = 1')
+        ->from('slide')
+        ->where('estatus = 1 AND tipo = '.$tipo.'')
         ->get();
         return $query->result();
     }

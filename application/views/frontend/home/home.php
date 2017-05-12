@@ -1,38 +1,34 @@
 <div class="container">
     <div class="row">
         <div class="col col-xs-12 col-sm-12 col-md-8">
-            <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+            <div id="carousel-principal" class="carousel slide" data-ride="carousel">
                 <ol class="carousel-indicators">
-                    <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
                     <?php
-                    for($slide = 0; $slide < count($slides); $slide++){
-                        //echo 'Registro:'.$i.' y su tipo:'.$slides[$i]->tipo;
-                        if($slides[$slide]->tipo == 1){
-                            echo '<li data-target="#carousel-example-generic" data-slide-to="'.$slide.'"></li>';
-                        }                           
+                    $active = 'active';
+                    for($slide = 0; $slide < count($slide_principal); $slide++){
+                        if($slide_principal[$slide]->tipo == 1){
+                            echo '<li data-target="#carousel-principal" data-slide-to="'.$slide.'" class="'.$active.'"></li>';
+                            $active = '';                           
+                        }
                     }
                     ?>
                 </ol>
                 <div class="carousel-inner" role="listbox">
-                    <div class="item active">
-                        <img src="http://placehold.it/750x300" alt="">
-                        <div class="carousel-caption text-right">
-                            <a href="" class="btn btn-primary btn-sm">Ver Más</a>
-                        </div>
-                    </div>
                     <?php
-                    if (empty($slides)) {
+                    if (empty($slide_principal)) {
                         echo '<div class="alert alert-warning text-center">Sin resultados</div>';
                     } else {
-                        foreach ($slides as $item):
+                        $active = 'active';
+                        foreach ($slide_principal as $item):
                             if($item->tipo == 1){
-                                echo '<div class="item">
+                                echo '<div class="item '.$active.'">
                                 <img src="'.$item->ruta.'" alt="'.$item->nombre.'">
                                 <div class="carousel-caption">
                                     <a href="" class="btn btn-primary btn-sm">Ver Más</a>
                                 </div>
                             </div>';
-                        }
+                            $active = '';
+                            }
                         endforeach;
                     }
                     ?>
@@ -40,34 +36,33 @@
             </div>
         </div>
         <div class="col col-xs-12 col-sm-12 col-md-4">
-            <div id="carousel-example-ungeneric" class="carousel slide" data-ride="carousel">
+            <div id="carousel-promo" class="carousel slide" data-ride="carousel">
                 <ol class="carousel-indicators">
-                    <li data-target="#carousel-example-ungeneric" data-slide-to="0" class="active"></li>
                     <?php
-                    for($promo = 0; $promo < count($slides); $promo++){
-                                //echo 'Registro:'.$i.' y su tipo:'.$slides[$i]->tipo;
-                        if($slides[$promo]->tipo == 2){
-                            echo '<li data-target="#carousel-example-generic" data-slide-to="'.$promo.'"></li>';
+                    $active = 'active';
+                    for($promo = 0; $promo < count($slide_promo); $promo++){
+                        if($slide_promo[$promo]->tipo == 2){
+                            echo '<li data-target="#carousel-promo" data-slide-to="'.$promo.'" class="'.$active.'"></li>';
+                            $active = '';
                         }                           
                     }
                     ?>
                 </ol>
                 <div class="carousel-inner" role="listbox">
-                    <div class="item active">
-                        <img src="http://placehold.it/360x300" alt="">
-                    </div>
                     <?php
-                    if (empty($slides)) {
+                    if (empty($slide_promo)) {
                         echo '<div class="alert alert-warning text-center">Sin resultados</div>';
                     } else {
-                        foreach ($slides as $item):
+                        $active = 'active';
+                        foreach ($slide_promo as $item):
                             if($item->tipo == 2){
-                                echo '<div class="item">
+                                echo '<div class="item '.$active.'">
                                 <img src="'.$item->ruta.'" alt="'.$item->nombre.'">
                                 <div class="carousel-caption">
                                     <a href="" class="btn btn-primary btn-sm">Ver Más</a>
                                 </div>
                             </div>';
+                            $active = '';
                         }
                         endforeach;
                     }
@@ -81,40 +76,63 @@
 <div class="container">
     <div class="row">
         <div class="col col-xs-12 col-sm-12 col-md-12">
+            <div class="row">
+                <div id="liquid" class="liquid">
+                    <span class="previous"><i class="glyphicon glyphicon-chevron-left"></a></span>
+                    <div class="wrapper">
+                        <ul>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                            <li><a href="#"><img src="uploads/cover/thumbs/azul_thumb.png" width="88" height="126" alt="image"/></a></li>
+                        </ul>
+                    </div>
+                    <span class="next"><i class="glyphicon glyphicon-chevron-right"></i></span>
+                </div>
+            </div>
         <h4>Videos Recientes</h4>
-            <div class="carousel slide" id="Slide-Video">
+            <div class="carousel slide" id="slide-video">
                 <div class="carousel-inner">
-                    <div class="item active">
-                        <ul class="">
-                            <li class="col-md-2">
+                    <?php
+                    if (empty($portadas)) {
+                        echo '<div class="alert alert-warning text-center">Sin resultados</div>';
+                    } else {
+                        $active = 'active';
+                        echo '<div class="item '.$active.'"><ul>';
+                        foreach ($portadas as $item):
+                            echo '<li class="col-md-2">
                                 <div class="thumbnail">
-                                    <a href="#"><img src="http://placehold.it/90x140" alt=""></a>
+                                    <a href=""><img src="'.$item->miniatura.'" alt="'.$item->nombre.'"></a>
                                 </div>
                                 <div class="caption">
                                     <h6>Praesent commodo</h6>
                                 </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="item">
-                        <ul class="">
-                            <li class="col-md-2">
-                                <div class="thumbnail">
-                                    <a href="#"><img src="http://placehold.it/90x140" alt=""></a>
-                                </div>
-                                <div class="caption">
-                                    <h6>Praesent commodo</h6>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                            </li>';
+                        $active = '';
+                        endforeach;
+                        echo '</ul></div>';
+                    }
+                    ?>                    
                 </div>					      
                 <div class="control-box">                            
-                    <a class="left carousel-control" href="#Slide-Video" role="button" data-slide="prev">
+                    <a class="left carousel-control" href="#slide-video" role="button" data-slide="prev">
                         <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
                         <span class="sr-only">Previous</span>
                     </a>
-                    <a class="right carousel-control" href="#Slide-Video" role="button" data-slide="next">
+                    <a class="right carousel-control" href="#slide-video" role="button" data-slide="next">
                         <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
                         <span class="sr-only">Next</span>
                     </a>

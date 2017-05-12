@@ -24,8 +24,9 @@
     //Editar Autor
     $("body").on("click","#tabla-autores a",function(event) {
         event.preventDefault(); 
-        idAutor = $(this).attr("href");       
-        editarAutor(idAutor); 
+        id = $(this).attr("href");
+        tabla = "autor";       
+        editarRegistro(id, tabla); 
     });
 
     $("#form-autor").formValidation({
@@ -76,7 +77,7 @@
             else if(response === true && $("#btn-autor").val() == "Editar") {
                 $("#form-autor")[0].reset();
                 $("#modal-autor").modal("hide");
-                listarAutor();
+                listarDatos("autor");
                 gestionarAutores("", 1);
                 $("#msj-autor").addClass("alert text-center alert-warning alert-accion").html("Autor editado.").show(100).delay(3500).hide(100);
             } else {
@@ -130,27 +131,5 @@ function gestionarAutores(buscar, pagina){
         cantidad = datos.cantidad;
         paginarRegistros(pagina, total_registros, cantidad);
         $("#paginacion-autores").html(paginador);
-    });
-}
-
-function editarAutor(id){
-    $.ajax({
-        type: "POST",
-        url: "admin/editarAutor",
-        cache: false,
-        data: {idAutor:id},
-        dataType: "JSON"
-    }).success( function(datos) {
-            var datos = eval(datos);
-            $("#form-autor")[0].reset();
-            $("#form-autor").attr("action", "admin/actualizarAutor");
-            $("#title-autor").text("Editar Autor");
-            $("#btn-autor").addClass("btn-warning").val("Editar");
-            $("#idAutor").val(idAutor);
-            $("#edit-autor").val(datos[0]);
-            $("#modal-autor").modal({
-                show:true,
-                backdrop:"static"
-            });
     });
 }

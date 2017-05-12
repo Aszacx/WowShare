@@ -24,9 +24,7 @@
                     </div>
                 </div>
                 <br />
-                <div class="table-responsive text-center" id="tabla-autores"> 
-                            
-                </div>
+                <div class="table-responsive text-center" id="tabla-autores"></div>
                 <div class="text-center" id="paginacion-autores"></div>
             </div>
         </div>

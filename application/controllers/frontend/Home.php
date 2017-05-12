@@ -15,14 +15,18 @@ class Home extends CI_Controller {
 
         $this->layout->setLayout('tmp_usuario');
         $this->layout->css(array(
-			base_url().'assets/bootstrap-3.3.6/css/bootstrap.min.css',
 			base_url().'assets/formvalidation.io-0.7/css/formValidation.min.css',
+			base_url().'assets/bootstrap-3.3.6/css/bootstrap.min.css',
 			base_url().'assets/font-awesome-4.5.0/css/font-awesome.min.css',
+			base_url().'assets/liquid-carousel-1.0/css/liquid-carousel.css',
 			base_url().'assets/wow/css/estilos.css'	            
 	    ));
 	    $this->layout->js(array(
 			base_url().'assets/jquery-2.1.4/jquery-2.1.4.min.js',
-			base_url().'assets/bootstrap-3.3.6/js/bootstrap.min.js'
+			base_url().'assets/formvalidation.io-0.7/js/formValidation.min.js',
+			base_url().'assets/bootstrap-3.3.6/js/bootstrap.min.js',
+			base_url().'assets/liquid-carousel-1.0/js/liquid-carousel.pack.js',
+			base_url().'assets/wow/js/user/user.js'
 	    ));
         $this->layout->setTitle('Ingresar | Wow Share');
         $this->load->model('frontend/Usuario_model');
@@ -33,7 +37,12 @@ class Home extends CI_Controller {
     	if (!empty($this->session_id)) {
         	$this->layout->setTitle('Bienvenido | Wow Share');
         	$datos['noticias'] = $this->Noticias_model->listaNoticias();
-            $datos['slides'] = $this->Slides_model->getSlides();
+            $datos['slide_principal'] = $this->Slides_model->getSlides(1);
+            $datos['slide_promo'] = $this->Slides_model->getSlides(2);
+            $datos['slide_banner'] = $this->Slides_model->getSlides(3);
+            $cantidad = 5;
+        	$inicio = (1 - 1) * $cantidad;
+            $datos['portadas'] = $this->Video_model->slideVideo($cantidad, $inicio);
             $datos['session'] = $this->session_id;
         	$this->layout->view('home', $datos);
         }
